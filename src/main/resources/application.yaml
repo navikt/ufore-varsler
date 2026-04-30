@@ -2,9 +2,6 @@ spring:
   application:
     name: ufore-varsler
 
-logging:
-  config: classpath:logback-local.xml
-
 management:
   endpoint:
     health:
