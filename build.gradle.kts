@@ -26,6 +26,7 @@ dependencies {
 //	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("tools.jackson.module:jackson-module-kotlin")
+	implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 //	runtimeOnly("org.postgresql:postgresql")
 //	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")

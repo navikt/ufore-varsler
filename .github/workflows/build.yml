@@ -1,0 +1,36 @@
+name: Bygg ufore-varsler
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main  # Bygges allerede av deploy-workflow
+
+jobs:
+  build:
+    name: Bygg med Gradle
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Bygg
+        run: ./gradlew build

@@ -1,0 +1,48 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    team: ufore
+  name: ufore-varsler-alerts
+  namespace: ufore
+spec:
+  groups:
+    - name: ufore-varsler-alerts
+      rules:
+        - alert: "Applikasjon nede"
+          expr: kube_deployment_status_replicas_available{deployment="ufore-varsler"} == 0
+          for: 2m
+          annotations:
+            message: "*ufore-varsler*: Ingen kjørende pods! Applikasjonen er nede."
+            action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1h,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22'))"
+          labels:
+            severity: critical
+            namespace: ufore
+            ufore_alerts: slack
+            alert_type: custom
+
+        - alert: "Høy Kafka consumer lag"
+          expr: |
+            max(kafka_consumer_fetch_manager_records_lag_max{app="ufore-varsler"}) > 1000
+          for: 5m
+          annotations:
+            message: "*ufore-varsler*: Kafka consumer lag er {{ $value }} meldinger – applikasjonen henger etter!"
+            action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1h,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22'))"
+          labels:
+            severity: warning
+            namespace: ufore
+            ufore_alerts: slack
+            alert_type: custom
+
+        - alert: "For mange feil i loggene"
+          expr: |
+            sum(increase(logd_messages_total{app="ufore-varsler", level="Error"}[5m])) > 10
+          for: 2m
+          annotations:
+            message: "*ufore-varsler*: {{ $value }} ERROR-logginnslag siste 5 min!"
+            action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1h,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22%20AND%20level:%22Error%22'))"
+          labels:
+            severity: error
+            namespace: ufore
+            ufore_alerts: slack
+            alert_type: custom

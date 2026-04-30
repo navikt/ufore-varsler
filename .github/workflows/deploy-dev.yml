@@ -1,0 +1,69 @@
+name: "Dev: ufore-varsler deploy"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: dev-ufore-varsler-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    name: Bygg og publiser Docker-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup java
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Bygg
+        run: ./gradlew build
+
+      - name: docker-build-push
+        uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2
+        id: docker-build-push
+        with:
+          team: ufore
+          dockerfile: Dockerfile
+
+  deploy-to-dev:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Deploy til dev
+        uses: nais/deploy/actions/deploy@2f28259ff29ea37915f5a0c9e2a8e3542c429df7
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/dev.yaml
+          IMAGE: ${{ needs.build-and-push.outputs.image }}
+          TEAM: ufore
