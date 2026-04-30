@@ -26,13 +26,6 @@ Applikasjon for å håndtere varsler knyttet til uføretrygd i Nav.
 ./gradlew test
 ```
 
-## Metrikk og helse
-
-Applikasjonen eksponerer helse- og metrikk-endepunkter via Spring Actuator:
-
-- `GET /actuator/health`
-- `GET /actuator/prometheus`
-
 ---
 
 ## Henvendelser
