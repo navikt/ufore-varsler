@@ -16,6 +16,7 @@ java {
 
 repositories {
 	mavenCentral()
+	maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 //	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("no.nav.tms.varsel:kotlin-builder:2.1.1")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")

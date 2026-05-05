@@ -48,3 +48,5 @@ spec:
   env:
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
+    - name: KAFKA_SECURITY_PROTOCOL
+      value: SSL

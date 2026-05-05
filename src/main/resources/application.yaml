@@ -1,6 +1,32 @@
 spring:
   application:
     name: ufore-varsler
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    client-id: ${spring.application.name}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: ${app.kafka.consumer-group-id}
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      missing-topics-fatal: false
+    properties:
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+      ssl.truststore.location: ${KAFKA_TRUSTSTORE_PATH:}
+      ssl.truststore.password: ${KAFKA_CREDSTORE_PASSWORD:}
+      ssl.keystore.location: ${KAFKA_KEYSTORE_PATH:}
+      ssl.keystore.password: ${KAFKA_CREDSTORE_PASSWORD:}
+      ssl.key.password: ${KAFKA_CREDSTORE_PASSWORD:}
+
+app:
+  kafka:
+    producer-topic: aapen-brukervarsel-v1
+    consumer-topic: aapen-varsel-hendelse-v1
+    consumer-group-id: ${spring.application.name}-varsel-hendelser
 
 management:
   endpoint:
