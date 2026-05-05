@@ -16,7 +16,7 @@ jobs:
       - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
         id: app-token
         with:
-          app-id: ${{ vars.TEAM_UFORE_APP_ID }}
+          client-id: ${{ vars.TEAM_UFORE_CLIENT_ID }}
           private-key: ${{ secrets.TEAM_UFORE_PRIVATE_KEY }}
       - name: Automerge Dependabot PRs
         uses: navikt/automerge-dependabot@70455df4433fac78f20d5a248f9ebf07ccac11fe
