@@ -18,6 +18,8 @@ class VarselConsumer(
 		groupId = "\${app.kafka.consumer-group-id}",
 	)
 	fun consume(@Payload message: String) {
+        logger.info("Melding: {}", message)
+
 		val hendelse = objectMapper.readValue(message, VarselHendelse::class.java)
 		if (hendelse.appnavn != "ufore-varsler") return
 
@@ -28,7 +30,7 @@ class VarselConsumer(
 data class VarselHendelse(
 	@JsonProperty("@event_name")
 	val eventName: String,
-	val varselType: String,
+	val varselType: String? = null,
 	val eventId: String,
 	val namespace: String,
 	val appnavn: String,
