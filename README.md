@@ -6,6 +6,7 @@ Applikasjon for å håndtere varsler knyttet til uføretrygd i Nav.
 
 `ufore-varsler` er en Spring Boot-applikasjon skrevet i Kotlin. 
 
+
 ## Kom i gang
 
 ### Forutsetninger
