@@ -24,8 +24,8 @@ spring:
 
 app:
   kafka:
-    producer-topic: aapen-brukervarsel-v1
-    consumer-topic: aapen-varsel-hendelse-v1
+    producer-topic: min-side.aapen-brukervarsel-v1
+    consumer-topic: min-side.aapen-varsel-hendelse-v1
     consumer-group-id: ${spring.application.name}-varsel-hendelser
 
 management:
