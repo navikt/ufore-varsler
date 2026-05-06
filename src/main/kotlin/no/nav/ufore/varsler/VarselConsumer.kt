@@ -6,6 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
+import java.time.ZonedDateTime
 
 @Component
 class VarselConsumer(
@@ -18,8 +19,6 @@ class VarselConsumer(
 		groupId = "\${app.kafka.consumer-group-id}",
 	)
 	fun consume(@Payload message: String) {
-        logger.info("Melding: {}", message)
-
 		val hendelse = objectMapper.readValue(message, VarselHendelse::class.java)
 		if (hendelse.appnavn != "ufore-varsler") return
 
@@ -31,7 +30,8 @@ data class VarselHendelse(
 	@JsonProperty("@event_name")
 	val eventName: String,
 	val varselType: String? = null,
-	val eventId: String,
+	val varselId: String,
 	val namespace: String,
 	val appnavn: String,
+    val tidspunkt: ZonedDateTime
 )
