@@ -1,6 +1,14 @@
 spring:
   application:
     name: ufore-varsler
+  profiles:
+    default: local
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  datasource:
+    url: ${DB_JDBC_URL}
+    driver-class-name: org.postgresql.Driver
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
     client-id: ${spring.application.name}

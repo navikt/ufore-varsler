@@ -29,6 +29,13 @@ spec:
         - id: loki
   kafka:
     pool: nav-dev
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_17
+        tier: db-g1-small
+        databases:
+          - name: ufore-varsler
+            envVarPrefix: DB
   replicas:
     min: 1
     max: 1
@@ -48,5 +55,7 @@ spec:
   env:
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
+    - name: SPRING_PROFILES_ACTIVE
+      value: dev
     - name: KAFKA_SECURITY_PROTOCOL
       value: SSL
