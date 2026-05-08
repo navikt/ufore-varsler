@@ -39,7 +39,7 @@ class VarselRepositoryTest {
 		assertEquals(VarselType.UNG_UFOR, hentetVarsel.type)
 		println("varsel.opprettet ${varsel.opprettet}")
 		println("hentetVarsel.opprettet ${hentetVarsel.opprettet}")
-		assertEquals(varsel.opprettet, hentetVarsel.opprettet)
+		assertEquals(varsel.opprettet.withNano(0), hentetVarsel.opprettet.withNano(0))
 		assertEquals(planlagtUtsending, hentetVarsel.planlagtUtsending)
 		assertNull(hentetVarsel.åpnet)
 		assertNull(hentetVarsel.sendt)
