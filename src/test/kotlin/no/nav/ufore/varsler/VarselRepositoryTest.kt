@@ -37,6 +37,8 @@ class VarselRepositoryTest {
 		assertEquals("12345678910", hentetVarsel.mottakerFnr)
 		assertEquals(Status.IKKE_SENDT, hentetVarsel.status)
 		assertEquals(VarselType.UNG_UFOR, hentetVarsel.type)
+		println("varsel.opprettet ${varsel.opprettet}")
+		println("hentetVarsel.opprettet ${hentetVarsel.opprettet}")
 		assertEquals(varsel.opprettet, hentetVarsel.opprettet)
 		assertEquals(planlagtUtsending, hentetVarsel.planlagtUtsending)
 		assertNull(hentetVarsel.åpnet)
