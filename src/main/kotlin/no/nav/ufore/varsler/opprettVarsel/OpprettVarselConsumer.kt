@@ -28,7 +28,6 @@ class OpprettVarselConsumer(
         val varsel = varselRepository.lagre(melding.fnr, melding.type)
 
         logger.info("Lagret varsel med id ${varsel.id}")
-
     }
 }
 
