@@ -51,7 +51,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         return jdbcTemplate.query(
             "select * from varsel where mottaker_fnr = ? and type = ?",
             { rs, _ -> Varsel.tilVarsel(rs) },
-            fnr, type
+            fnr, type.name
         ).firstOrNull()
     }
 }

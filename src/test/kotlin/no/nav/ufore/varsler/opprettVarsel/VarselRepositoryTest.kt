@@ -49,8 +49,6 @@ class VarselRepositoryTest {
         assertEquals("12345678910", hentetVarsel.mottakerFnr)
         assertEquals(Status.IKKE_SENDT, hentetVarsel.status)
         assertEquals(VarselType.UNGE_MED_UFORE, hentetVarsel.type)
-		println("varsel.opprettet ${varsel.opprettet}")
-		println("hentetVarsel.opprettet ${hentetVarsel.opprettet}")
         assertEquals(varsel.opprettet.withNano(0), hentetVarsel.opprettet.withNano(0))
         assertEquals(planlagtUtsending, hentetVarsel.planlagtUtsending)
         assertNull(hentetVarsel.åpnet)
@@ -68,6 +66,24 @@ class VarselRepositoryTest {
 		assertFailsWith<DataIntegrityViolationException> {
 			repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		}
+	}
+
+	@Test
+	fun `Skal hente varsel på fnr og type`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val lagret = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+
+		val hentet = assertNotNull(repository.hent("12345678910", VarselType.UNGE_MED_UFORE))
+		assertEquals(lagret.id, hentet.id)
+	}
+
+	@Test
+	fun `Skal returnere null når varsel ikke finnes for fnr og type`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val hentet = repository.hent("12345678910", VarselType.UNGE_MED_UFORE)
+		assertNull(hentet)
 	}
 
 	private fun dataSource() = DriverManagerDataSource(
