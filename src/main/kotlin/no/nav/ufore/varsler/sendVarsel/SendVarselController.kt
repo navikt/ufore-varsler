@@ -1,4 +1,4 @@
-package no.nav.ufore.varsler
+package no.nav.ufore.varsler.sendVarsel
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/varsler")
-class VarselController(
-	private val varselProducer: VarselProducer,
+class SendVarselController(
+    private val varselProducer: SendVarselProducer,
 ) {
 	private val logger = LoggerFactory.getLogger(javaClass)
 

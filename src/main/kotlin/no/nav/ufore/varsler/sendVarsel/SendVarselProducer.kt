@@ -1,4 +1,4 @@
-package no.nav.ufore.varsler
+package no.nav.ufore.varsler.sendVarsel
 
 import no.nav.tms.varsel.action.Produsent
 import no.nav.tms.varsel.action.Sensitivitet
@@ -15,9 +15,9 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @Service
-class VarselProducer(
+class SendVarselProducer(
 	private val kafkaTemplate: KafkaTemplate<String, String>,
-	@Value("\${app.kafka.producer-topic}") private val producerTopic: String,
+	@Value("\${app.kafka.min-side.brukervarsel}") private val producerTopic: String,
 	@Value("\${NAIS_CLUSTER_NAME:local}") private val cluster: String,
 	@Value("\${NAIS_NAMESPACE:local}") private val namespace: String,
 	@Value("\${NAIS_APP_NAME:\${spring.application.name}}") private val appnavn: String

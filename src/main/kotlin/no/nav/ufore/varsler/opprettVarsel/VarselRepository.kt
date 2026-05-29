@@ -1,9 +1,10 @@
-package no.nav.ufore.varsler
+package no.nav.ufore.varsler.opprettVarsel
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
+import java.sql.ResultSet
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
@@ -41,22 +42,20 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 	fun hent(id: String): Varsel? {
 		return jdbcTemplate.query(
 			"select * from varsel where id = ?",
-			{ rs, _ ->
-				Varsel(
-					id = rs.getObject("id", UUID::class.java),
-					mottakerFnr = rs.getString("mottaker_fnr"),
-					status = Status.valueOf(rs.getString("status")),
-					type = VarselType.valueOf(rs.getString("type")),
-					opprettet = rs.getObject("opprettet", LocalDateTime::class.java),
-					planlagtUtsending = rs.getObject("planlagt_utsending", LocalDateTime::class.java),
-					åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
-					sendt = rs.getObject("sendt", LocalDateTime::class.java),
-				)
-			},
+			{ rs, _ -> Varsel.tilVarsel(rs) },
 			id
 		).firstOrNull()
 	}
+
+    fun hent(fnr: String, type: VarselType): Varsel? {
+        return jdbcTemplate.query(
+            "select * from varsel where mottaker_fnr = ? and type = ?",
+            { rs, _ -> Varsel.tilVarsel(rs) },
+            fnr, type
+        ).firstOrNull()
+    }
 }
+
 
 data class Varsel(
 	val id: UUID,
@@ -68,12 +67,26 @@ data class Varsel(
 	val planlagtUtsending: LocalDateTime?,
 	val åpnet: LocalDateTime?,
 	val sendt: LocalDateTime?,
-)
+
+    ) {
+    companion object {
+        fun tilVarsel(rs: ResultSet) = Varsel(
+            id = rs.getObject("id", UUID::class.java),
+            mottakerFnr = rs.getString("mottaker_fnr"),
+            status = Status.valueOf(rs.getString("status")),
+            type = VarselType.valueOf(rs.getString("type")),
+            opprettet = rs.getObject("opprettet", LocalDateTime::class.java),
+            planlagtUtsending = rs.getObject("planlagt_utsending", LocalDateTime::class.java),
+            åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
+            sendt = rs.getObject("sendt", LocalDateTime::class.java),
+        )
+    }
+}
 
 enum class Status {
 	IKKE_SENDT, SENDT, ÅPNET, FEIL
 }
 
 enum class VarselType {
-	UNG_UFOR
+    UNGE_MED_UFORE
 }

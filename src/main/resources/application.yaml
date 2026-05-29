@@ -32,9 +32,13 @@ spring:
 
 app:
   kafka:
-    producer-topic: min-side.aapen-brukervarsel-v1
-    consumer-topic: min-side.aapen-varsel-hendelse-v1
-    consumer-group-id: ${spring.application.name}-varsel-hendelser
+    min-side:
+      varsel-hendelse: min-side.aapen-varsel-hendelse-v1
+      consumer-group-id: ufore-varsler-varsel-hendelse-consumer
+      brukervarsel: min-side.aapen-brukervarsel-v1
+    ufore-varsler:
+      topic: ufore.varsler
+      consumer-group-id: ufore-varsler-consumer
 
 management:
   endpoint:
