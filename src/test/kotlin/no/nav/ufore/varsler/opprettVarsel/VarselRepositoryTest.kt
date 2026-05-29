@@ -32,14 +32,14 @@ class VarselRepositoryTest {
 
 		val varsel = repository.lagre(
 			fnr = "12345678910",
-			type = VarselType.UNG_UFOR,
+			type = VarselType.UNGE_MED_UFORE,
 			planlagtUtsending = planlagtUtsending,
 		)
 
         assertNotNull(varsel.id)
         assertEquals("12345678910", varsel.mottakerFnr)
         assertEquals(Status.IKKE_SENDT, varsel.status)
-        assertEquals(VarselType.UNG_UFOR, varsel.type)
+        assertEquals(VarselType.UNGE_MED_UFORE, varsel.type)
         assertEquals(planlagtUtsending, varsel.planlagtUtsending)
         assertNull(varsel.åpnet)
         assertNull(varsel.sendt)
@@ -48,7 +48,7 @@ class VarselRepositoryTest {
         assertEquals(varsel.id, hentetVarsel.id)
         assertEquals("12345678910", hentetVarsel.mottakerFnr)
         assertEquals(Status.IKKE_SENDT, hentetVarsel.status)
-        assertEquals(VarselType.UNG_UFOR, hentetVarsel.type)
+        assertEquals(VarselType.UNGE_MED_UFORE, hentetVarsel.type)
 		println("varsel.opprettet ${varsel.opprettet}")
 		println("hentetVarsel.opprettet ${hentetVarsel.opprettet}")
         assertEquals(varsel.opprettet.withNano(0), hentetVarsel.opprettet.withNano(0))
@@ -63,10 +63,10 @@ class VarselRepositoryTest {
 		val jdbcTemplate = JdbcTemplate(dataSource)
 		val repository = VarselRepository(jdbcTemplate)
 
-		repository.lagre(fnr = "12345678910", type = VarselType.UNG_UFOR)
+		repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 
 		assertFailsWith<DataIntegrityViolationException> {
-			repository.lagre(fnr = "12345678910", type = VarselType.UNG_UFOR)
+			repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		}
 	}
 
