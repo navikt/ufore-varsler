@@ -8,6 +8,9 @@ plugins {
 group = "no.nav.ufore"
 version = "0.0.1-SNAPSHOT"
 
+ext["tomcat.version"] = "11.0.22"
+ext["postgresql.version"] = "42.7.11"
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
