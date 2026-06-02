@@ -1,0 +1,39 @@
+#apiVersion: nais.io/v1
+#kind: Naisjob
+#metadata:
+#  name: ufore-varsler-paminnelse
+#  namespace: ufore
+#  labels:
+#    team: ufore
+#spec:
+#  image: "{{ image }}"
+#  schedule: "0 6 * * *"
+#  backoffLimit: 2
+#  ttlSecondsAfterFinished: 3600
+#  observability:
+#    logging:
+#      destinations:
+#        - id: elastic
+#        - id: loki
+#  kafka:
+#    pool: nav-prod
+#  gcp:
+#    sqlInstances:
+#      - name: ufore-varsler
+#        databases:
+#          - name: ufore-varsler
+#            envVarPrefix: DB
+#  resources:
+#    limits:
+#      cpu: 500m
+#      memory: 512Mi
+#    requests:
+#      cpu: 100m
+#      memory: 256Mi
+#  env:
+#    - name: SPRING_PROFILES_ACTIVE
+#      value: job
+#    - name: KAFKA_SECURITY_PROTOCOL
+#      value: SSL
+#    - name: LOGGING_CONFIG
+#      value: classpath:logback-json.xml

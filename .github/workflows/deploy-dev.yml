@@ -67,3 +67,11 @@ jobs:
           RESOURCE: .nais/dev.yaml, .nais/topic-dev.yaml
           IMAGE: ${{ needs.build-and-push.outputs.image }}
           TEAM: ufore
+
+      - name: Deploy påminnelsesjobb til dev
+        uses: nais/deploy/actions/deploy@a7f8690f9b367fcbf5348a0a1e21d44f1aae50eb
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/job-dev.yaml
+          IMAGE: ${{ needs.build-and-push.outputs.image }}
+          TEAM: ufore

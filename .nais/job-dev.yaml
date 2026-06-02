@@ -1,0 +1,31 @@
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  name: ufore-varsler-send-jobb
+  namespace: ufore
+  labels:
+    team: ufore
+spec:
+  image: "{{ image }}"
+  schedule: "*/5 8-16 * * 1-5"
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+  kafka:
+    pool: nav-dev
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_17
+        tier: db-g1-small
+        databases:
+          - name: ufore-varsler
+            envVarPrefix: DB
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: job
+    - name: KAFKA_SECURITY_PROTOCOL
+      value: SSL
+    - name: LOGGING_CONFIG
+      value: classpath:logback-json.xml
