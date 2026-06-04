@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("job")
-class SendVarslerJobb() : ApplicationRunner {
+class SendVarslerJobb : ApplicationRunner {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun run(args: ApplicationArguments) {
         logger.info("Starter jobb")
-
     }
 }

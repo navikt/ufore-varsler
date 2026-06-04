@@ -38,7 +38,8 @@ class SendVarselProducer(
 
 		val varselId = UUID.randomUUID().toString()
 		val melding = VarselActionBuilder.opprett {
-			type = Varseltype.Beskjed
+			this.type = Varseltype.Beskjed
+			this.link = "https://www.nav.no/uforetrygd/selvbetjening"
 			this.varselId = varselId
 			this.ident = ident
 			this.sensitivitet = Sensitivitet.Substantial
@@ -51,6 +52,7 @@ class SendVarselProducer(
 		}
 
 		kafkaTemplate.send(producerTopic, varselId, melding).get(10, TimeUnit.SECONDS)
+		// TODO: Lagre i database at varsel er sendt
 
 		logger.info("Sendte varsel med id=$varselId")
 
