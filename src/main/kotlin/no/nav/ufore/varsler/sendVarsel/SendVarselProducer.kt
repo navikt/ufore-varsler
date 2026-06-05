@@ -36,6 +36,7 @@ class SendVarselProducer(
 			throw ResponseStatusException(HttpStatus.BAD_REQUEST, "tekst kan ikke være tom")
 		}
 
+		// TODO: Når vi implementerer produsenten skikkelig så må vi bruke varselId som ligger i databasen
 		val varselId = UUID.randomUUID().toString()
 		val melding = VarselActionBuilder.opprett {
 			this.type = Varseltype.Beskjed
@@ -52,10 +53,8 @@ class SendVarselProducer(
 		}
 
 		kafkaTemplate.send(producerTopic, varselId, melding).get(10, TimeUnit.SECONDS)
-		// TODO: Lagre i database at varsel er sendt
 
 		logger.info("Sendte varsel med id=$varselId")
-
 		return SendResult(varselId)
 	}
 }
