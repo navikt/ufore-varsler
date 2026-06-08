@@ -9,21 +9,21 @@ import java.util.*
 @Service
 class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 
-	fun lagre(fnr: String, type: VarselType, planlagtUtsending: LocalDateTime? = null): Varsel {
+	fun lagre(fnr: String, type: VarselType): Varsel {
 		val varsel = Varsel(
 			id = UUID.randomUUID(),
 			mottakerFnr = fnr,
 			status = Status.IKKE_SENDT,
 			type = type,
+			varselId = UUID.randomUUID(),
 			opprettet = LocalDateTime.now(),
-			planlagtUtsending = planlagtUtsending,
 			åpnet = null,
 			sendt = null,
 		)
 
 		jdbcTemplate.update(
 			"""
-				insert into varsel (id, mottaker_fnr, status, type, opprettet, planlagt_utsending, aapnet, sendt)
+				insert into varsel (id, mottaker_fnr, status, type, opprettet, aapnet, sendt, varsel_id)
 				values (?, ?, ?, ?, ?, ?, ?, ?)
 			""".trimIndent(),
 			varsel.id,
@@ -31,9 +31,9 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 			varsel.status.name,
 			varsel.type.name,
 			varsel.opprettet,
-			varsel.planlagtUtsending,
 			varsel.åpnet,
 			varsel.sendt,
+			varsel.varselId,
 		)
 
 		return varsel
@@ -62,21 +62,19 @@ data class Varsel(
 	val mottakerFnr: String,
 	val status: Status,
 	val type: VarselType,
-
+	val varselId: UUID,
 	val opprettet: LocalDateTime,
-	val planlagtUtsending: LocalDateTime?,
 	val åpnet: LocalDateTime?,
 	val sendt: LocalDateTime?,
-
-    ) {
+) {
     companion object {
         fun tilVarsel(rs: ResultSet) = Varsel(
             id = rs.getObject("id", UUID::class.java),
             mottakerFnr = rs.getString("mottaker_fnr"),
             status = Status.valueOf(rs.getString("status")),
             type = VarselType.valueOf(rs.getString("type")),
+			varselId = rs.getObject("varsel_id", UUID::class.java),
             opprettet = rs.getObject("opprettet", LocalDateTime::class.java),
-            planlagtUtsending = rs.getObject("planlagt_utsending", LocalDateTime::class.java),
             åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
             sendt = rs.getObject("sendt", LocalDateTime::class.java),
         )
