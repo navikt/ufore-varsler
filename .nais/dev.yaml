@@ -51,7 +51,10 @@ spec:
     path: actuator/prometheus
   accessPolicy:
     outbound:
-      external: []
+      external:
+        - host: ufore-unleash-api.nav.cloud.nais.io
+  envFrom:
+    - secret: ufore-varsler-unleash-api-token
   env:
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml

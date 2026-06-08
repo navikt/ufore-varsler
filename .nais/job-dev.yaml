@@ -22,6 +22,12 @@ spec:
         databases:
           - name: ufore-varsler
             envVarPrefix: DB
+  accessPolicy:
+    outbound:
+      external:
+        - host: ufore-unleash-api.nav.cloud.nais.io
+  envFrom:
+    - secret: ufore-varsler-unleash-api-token
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: job
