@@ -65,16 +65,16 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun antallSendtIDag(): Int {
         return jdbcTemplate.queryForObject(
-            "select count(*) from varsel where CAST(sendt AS DATE) = CURRENT_DATE and status != ?",
+            "select count(*) from varsel where CAST(sendt AS DATE) = CURRENT_DATE and status = ?",
             { rs, _ -> rs.getInt(1) },
             Status.SENDT.name
         )
     }
 
-    fun oppdaterStatus(id: String, status: Status) {
+    fun oppdaterSendt(id: String) {
         jdbcTemplate.update(
-            "update varsel set status = ? where id = ?",
-            status.name, id
+            "update varsel set status = ?, sendt = ? where id = ?",
+			Status.SENDT.name, LocalDateTime.now(), id
         )
     }
 }

@@ -53,7 +53,7 @@ class SendVarselProducer(
 
         kafkaTemplate.send(producerTopic, request.varselId, melding).get(10, TimeUnit.SECONDS)
 
-        logger.info("Sendte varsel med id=$request.varselId")
+        logger.info("Sendte varsel med id=${request.varselId}")
         return SendResult(request.varselId)
 	}
 }

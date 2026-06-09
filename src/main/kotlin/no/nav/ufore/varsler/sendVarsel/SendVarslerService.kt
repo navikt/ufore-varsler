@@ -12,8 +12,12 @@ class SendVarslerService(
     private val varselRepository: VarselRepository,
     private val varselProducer: SendVarselProducer,
 ) {
+
+    companion object {
+        val maksAntallPerDag = 300
+    }
+
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val maksAntallPerDag = 300
     private val varselTekst = "Du har fått et varsel fra Nav. Logg inn på nav.no for å se mer."
 
     fun execute() {
@@ -37,9 +41,9 @@ class SendVarslerService(
         ikkeSendte.forEach {
             try {
                 varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr, varselTekst))
-                varselRepository.oppdaterStatus(it.id.toString(), Status.SENDT)
+                varselRepository.oppdaterSendt(it.id.toString())
             } catch (e: Exception) {
-                logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}: ", e)
+                logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}", e)
             }
         }
 
