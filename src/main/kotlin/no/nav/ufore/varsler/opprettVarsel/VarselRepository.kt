@@ -65,7 +65,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun antallSendtIDag(): Int {
         return jdbcTemplate.queryForObject(
-            "select count(*) from varsel where DATE(sendt) = CURRENT_DATE and status != ?",
+            "select count(*) from varsel where CAST(sendt AS DATE) = CURRENT_DATE and status != ?",
             { rs, _ -> rs.getInt(1) },
             Status.SENDT.name
         )
