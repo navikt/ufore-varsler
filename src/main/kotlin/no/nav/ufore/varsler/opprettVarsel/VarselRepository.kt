@@ -54,6 +54,29 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
             fnr, type.name
         ).firstOrNull()
     }
+
+    fun hentIkkeSendte(antall: Int): List<Varsel> {
+        return jdbcTemplate.query(
+            "select * from varsel where status = ? LIMIT ?",
+            { rs, _ -> Varsel.tilVarsel(rs) },
+            Status.IKKE_SENDT.name, antall
+        )
+    }
+
+    fun antallSendtIDag(): Int {
+        return jdbcTemplate.queryForObject(
+            "select count(*) from varsel where DATE(sendt) = CURRENT_DATE and status != ?",
+            { rs, _ -> rs.getInt(1) },
+            Status.SENDT.name
+        )
+    }
+
+    fun oppdaterStatus(id: String, status: Status) {
+        jdbcTemplate.update(
+            "update varsel set status = ? where id = ?",
+            status.name, id
+        )
+    }
 }
 
 

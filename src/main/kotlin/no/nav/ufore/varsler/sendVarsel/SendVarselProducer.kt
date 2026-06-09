@@ -6,12 +6,11 @@ import no.nav.tms.varsel.action.Tekst
 import no.nav.tms.varsel.action.Varseltype
 import no.nav.tms.varsel.builder.VarselActionBuilder
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -24,7 +23,7 @@ class SendVarselProducer(
 ) {
 	private val logger = LoggerFactory.getLogger(javaClass)
 
-	fun sendBeskjed(request: SendBeskjedRequest): SendResult {
+	fun sendBeskjed(request: SendVarselRequest): SendResult {
 		val ident = request.ident.trim()
 		val tekst = request.tekst.trim()
 
@@ -36,12 +35,12 @@ class SendVarselProducer(
 			throw ResponseStatusException(HttpStatus.BAD_REQUEST, "tekst kan ikke være tom")
 		}
 
-		// TODO: Når vi implementerer produsenten skikkelig så må vi bruke varselId som ligger i databasen
-		val varselId = UUID.randomUUID().toString()
+        // TODO: lenke
+        // TODO: sms
 		val melding = VarselActionBuilder.opprett {
 			this.type = Varseltype.Beskjed
 			this.link = "https://uforetrygd-selvbetjening-frontend-borger.ansatt.dev.nav.no/uforetrygd/selvbetjening"
-			this.varselId = varselId
+			this.varselId = request.varselId
 			this.ident = ident
 			this.sensitivitet = Sensitivitet.Substantial
 			this.tekst = Tekst(
@@ -52,11 +51,17 @@ class SendVarselProducer(
 			this.produsent = Produsent(cluster, namespace, appnavn)
 		}
 
-		kafkaTemplate.send(producerTopic, varselId, melding).get(10, TimeUnit.SECONDS)
+        kafkaTemplate.send(producerTopic, request.varselId, melding).get(10, TimeUnit.SECONDS)
 
-		logger.info("Sendte varsel med id=$varselId")
-		return SendResult(varselId)
+        logger.info("Sendte varsel med id=$request.varselId")
+        return SendResult(request.varselId)
 	}
 }
 
 data class SendResult(val varselId: String)
+
+data class SendVarselRequest(
+    val varselId: String,
+    val ident: String,
+    val tekst: String,
+)
