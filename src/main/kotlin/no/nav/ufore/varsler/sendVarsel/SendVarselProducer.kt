@@ -40,7 +40,7 @@ class SendVarselProducer(
 		val varselId = UUID.randomUUID().toString()
 		val melding = VarselActionBuilder.opprett {
 			this.type = Varseltype.Beskjed
-			this.link = "https://www.nav.no/uforetrygd/selvbetjening"
+			this.link = "https://uforetrygd-selvbetjening-frontend-borger.ansatt.dev.nav.no/uforetrygd/selvbetjening"
 			this.varselId = varselId
 			this.ident = ident
 			this.sensitivitet = Sensitivitet.Substantial
