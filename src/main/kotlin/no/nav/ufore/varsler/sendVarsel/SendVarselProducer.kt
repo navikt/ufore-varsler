@@ -39,7 +39,7 @@ class SendVarselProducer(
 		// TODO: Når vi implementerer produsenten skikkelig så må vi bruke varselId som ligger i databasen
 		val varselId = UUID.randomUUID().toString()
 		val melding = VarselActionBuilder.opprett {
-			this.type = Varseltype.Oppgave
+			this.type = Varseltype.Beskjed
 			this.link = "https://uforetrygd-selvbetjening-frontend-borger.ansatt.dev.nav.no/uforetrygd/selvbetjening"
 			this.varselId = varselId
 			this.ident = ident
