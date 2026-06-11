@@ -24,6 +24,8 @@ class VarselStatusConsumer(
 		val hendelse = objectMapper.readValue(message, VarselHendelse::class.java)
 		if (hendelse.appnavn != "ufore-varsler") return
 
+		// TODO: Marker varsel i databasen som sendt
+
 		logger.info("Mottok varselhendelse: {}", hendelse)
 	}
 }

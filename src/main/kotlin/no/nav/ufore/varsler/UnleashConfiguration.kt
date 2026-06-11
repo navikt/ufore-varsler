@@ -31,7 +31,7 @@ class UnleashConfiguration {
 
     @Profile("local")
     @Bean
-    fun lokalUnleash(): Unleash {
+    fun lokalUnleash(): FakeUnleash {
         return FakeUnleash().apply {
             enableAll()
         }

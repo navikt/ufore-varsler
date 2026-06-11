@@ -16,7 +16,7 @@ class SendVarselController(
 	private val logger = LoggerFactory.getLogger(javaClass)
 
 	@PostMapping("/beskjed")
-	fun sendBeskjed(@RequestBody request: SendBeskjedRequest): ResponseEntity<SendBeskjedResponse> {
+	fun sendBeskjed(@RequestBody request: SendVarselRequest): ResponseEntity<SendBeskjedResponse> {
 		logger.info("Sender varsel...")
 
 		val resultat = varselProducer.sendBeskjed(request)
@@ -26,10 +26,5 @@ class SendVarselController(
 			.body(SendBeskjedResponse(varselId = resultat.varselId))
 	}
 }
-
-data class SendBeskjedRequest(
-	val ident: String,
-	val tekst: String,
-)
 
 data class SendBeskjedResponse(val varselId: String)
