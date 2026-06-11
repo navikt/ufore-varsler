@@ -15,10 +15,9 @@ class VarselStatusController(
 ) {
 
     @GetMapping("/status")
-    fun hentStatus(@RequestHeader("Authorization") authHeader: String): ResponseEntity<VarselStatusResponse> {
-        val fnr = tokenValidator.hentFnr(authHeader)
+    fun hentStatus(@RequestHeader("Authorization", required = false) authHeader: String?): ResponseEntity<VarselStatusResponse> {
+        val fnr = authHeader?.let(tokenValidator::hentFnr)
             ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-
         return ResponseEntity.ok(VarselStatusResponse(varselStatusService.harMottattVarsel(fnr)))
     }
 }
