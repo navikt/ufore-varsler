@@ -51,7 +51,7 @@ class SendVarselProducer(
 			this.produsent = Produsent(cluster, namespace, appnavn)
 		}
 
-        kafkaTemplate.send(producerTopic, request.varselId, melding).get(10, TimeUnit.SECONDS)
+        kafkaTemplate.send(producerTopic, request.varselId, melding).get(1, TimeUnit.SECONDS)
 
         logger.info("Sendte varsel med id=${request.varselId}")
         return SendResult(request.varselId)
