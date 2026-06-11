@@ -57,7 +57,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun hentIkkeSendte(antall: Int): List<Varsel> {
         return jdbcTemplate.query(
-            "select * from varsel where status = ? LIMIT ?",
+            "select * from varsel where status = ? order by opprettet asc LIMIT ?",
             { rs, _ -> Varsel.tilVarsel(rs) },
             Status.IKKE_SENDT.name, antall
         )
