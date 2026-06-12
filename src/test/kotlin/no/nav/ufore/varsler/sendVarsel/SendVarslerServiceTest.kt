@@ -50,7 +50,7 @@ class SendVarslerServiceTest {
         sendVarslerService.execute()
 
         val varsel = varselRepository.hent("12345678901", VarselType.UNGE_MED_UFORE)
-        assertEquals(Status.SENDT, varsel?.status)
+        assertEquals(Status.BESTILT, varsel?.status)
 
         verify(exactly = 1) { sendVarselProducer.sendBeskjed(any()) }
     }
@@ -64,7 +64,7 @@ class SendVarslerServiceTest {
         sendVarslerService.execute()
 
         val varsel = varselRepository.hent("12345678901", VarselType.UNGE_MED_UFORE)
-        assertEquals(Status.IKKE_SENDT, varsel?.status)
+        assertEquals(Status.OPPRETTET, varsel?.status)
     }
 
     @Test
@@ -76,7 +76,7 @@ class SendVarslerServiceTest {
         sendVarslerService.execute()
 
         val varsel = varselRepository.hent("12345678901", VarselType.UNGE_MED_UFORE)
-        assertEquals(Status.IKKE_SENDT, varsel?.status)
+        assertEquals(Status.OPPRETTET, varsel?.status)
     }
 
     @Test
@@ -90,10 +90,10 @@ class SendVarslerServiceTest {
         sendVarslerService.execute() // nå er maks antall per dag sendt
         sendVarslerService.execute() // skal ikke sende flere i dag
 
-        val ikkeSendt = varselRepository.hentIkkeSendte(100)
+        val ikkeSendt = varselRepository.hentOpprettet(100)
         assertEquals(10, ikkeSendt.size)
 
-        val sendtIDag = varselRepository.antallSendtIDag()
+        val sendtIDag = varselRepository.antallBestiltIDag()
         assertEquals(maksAntallPerDag, sendtIDag)
 
         verify(exactly = maksAntallPerDag) { sendVarselProducer.sendBeskjed(any()) }

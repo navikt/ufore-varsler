@@ -32,19 +32,21 @@ class VarselRepositoryTest {
 
         assertNotNull(varsel.id)
         assertEquals("12345678910", varsel.mottakerFnr)
-        assertEquals(Status.IKKE_SENDT, varsel.status)
+        assertEquals(Status.OPPRETTET, varsel.status)
         assertEquals(VarselType.UNGE_MED_UFORE, varsel.type)
         assertNull(varsel.åpnet)
+        assertNull(varsel.bestilt)
         assertNull(varsel.sendt)
 		assertNotNull(varsel.varselId)
 
 		val hentetVarsel = assertNotNull(repository.hent(varsel.id.toString()))
         assertEquals(varsel.id, hentetVarsel.id)
         assertEquals("12345678910", hentetVarsel.mottakerFnr)
-        assertEquals(Status.IKKE_SENDT, hentetVarsel.status)
+        assertEquals(Status.OPPRETTET, hentetVarsel.status)
         assertEquals(VarselType.UNGE_MED_UFORE, hentetVarsel.type)
         assertEquals(varsel.opprettet.withNano(0), hentetVarsel.opprettet.withNano(0))
         assertNull(hentetVarsel.åpnet)
+        assertNull(hentetVarsel.bestilt)
         assertNull(hentetVarsel.sendt)
 		assertEquals(varsel.varselId, hentetVarsel.varselId)
 	}
@@ -78,6 +80,96 @@ class VarselRepositoryTest {
 
 		val hentet = repository.hent("12345678910", VarselType.UNGE_MED_UFORE)
 		assertNull(hentet)
+	}
+
+	@Test
+	fun `Skal hente varsler med status OPPRETTET`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+        val sendtVarsel = repository.lagre(fnr = "123459156", type = VarselType.UNGE_MED_UFORE)
+
+        repository.oppdaterSendt(sendtVarsel.varselId.toString())
+
+		val opprettet = repository.hentOpprettet(10)
+
+		assertEquals(1, opprettet.size)
+		assertEquals(varsel.id, opprettet[0].id)
+	}
+
+	@Test
+	fun `Skal begrense antall returnerte varsler`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		repository.lagre(fnr = "12345678901", type = VarselType.UNGE_MED_UFORE)
+		repository.lagre(fnr = "12345678902", type = VarselType.UNGE_MED_UFORE)
+		repository.lagre(fnr = "12345678903", type = VarselType.UNGE_MED_UFORE)
+
+		val opprettet = repository.hentOpprettet(2)
+
+		assertEquals(2, opprettet.size)
+	}
+
+	@Test
+	fun `Skal telle antall bestilt i dag`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+        assertEquals(0, repository.antallBestiltIDag())
+
+		val varsel1 = repository.lagre(fnr = "12345678901", type = VarselType.UNGE_MED_UFORE)
+		val varsel2 = repository.lagre(fnr = "12345678902", type = VarselType.UNGE_MED_UFORE)
+        val ikkeBestilt = repository.lagre(fnr = "12345678903", type = VarselType.UNGE_MED_UFORE)
+		repository.oppdaterBestilt(varsel1.varselId.toString())
+		repository.oppdaterBestilt(varsel2.varselId.toString())
+
+		assertEquals(2, repository.antallBestiltIDag())
+	}
+
+	@Test
+	fun `Skal oppdatere varsel til BESTILT`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+		repository.oppdaterBestilt(varsel.varselId.toString())
+
+		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		assertEquals(Status.BESTILT, oppdatert.status)
+		assertNotNull(oppdatert.bestilt)
+	}
+
+	@Test
+	fun `Skal oppdatere varsel til ÅPNET`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+		repository.oppdaterÅpnet(varsel.varselId.toString())
+
+		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		assertEquals(Status.ÅPNET, oppdatert.status)
+		assertNotNull(oppdatert.åpnet)
+	}
+
+	@Test
+	fun `Skal oppdatere varsel til SENDT`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+		repository.oppdaterSendt(varsel.varselId.toString())
+
+		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		assertEquals(Status.SENDT, oppdatert.status)
+		assertNotNull(oppdatert.sendt)
+	}
+
+	@Test
+	fun `Skal oppdatere varsel til FEILET`() {
+		val repository = VarselRepository(jdbcTemplate)
+
+		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
+		repository.oppdaterFeilet(varsel.varselId.toString())
+
+		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		assertEquals(Status.FEILET, oppdatert.status)
 	}
 
 	private fun dataSource() = DriverManagerDataSource(

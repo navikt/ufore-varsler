@@ -13,18 +13,19 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 		val varsel = Varsel(
 			id = UUID.randomUUID(),
 			mottakerFnr = fnr,
-			status = Status.IKKE_SENDT,
+			status = Status.OPPRETTET,
 			type = type,
 			varselId = UUID.randomUUID(),
 			opprettet = LocalDateTime.now(),
+            bestilt = null,
+            sendt = null,
 			åpnet = null,
-			sendt = null,
 		)
 
 		jdbcTemplate.update(
 			"""
-				insert into varsel (id, mottaker_fnr, status, type, opprettet, aapnet, sendt, varsel_id)
-				values (?, ?, ?, ?, ?, ?, ?, ?)
+				insert into varsel (id, mottaker_fnr, status, type, opprettet, aapnet, bestilt, sendt, varsel_id)
+				values (?, ?, ?, ?, ?, ?, ?, ?, ?)
 			""".trimIndent(),
 			varsel.id,
 			varsel.mottakerFnr,
@@ -32,6 +33,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 			varsel.type.name,
 			varsel.opprettet,
 			varsel.åpnet,
+            varsel.bestilt,
 			varsel.sendt,
 			varsel.varselId,
 		)
@@ -55,26 +57,25 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         ).firstOrNull()
     }
 
-    fun hentIkkeSendte(antall: Int): List<Varsel> {
+    fun hentOpprettet(antall: Int): List<Varsel> {
         return jdbcTemplate.query(
             "select * from varsel where status = ? order by opprettet asc LIMIT ?",
             { rs, _ -> Varsel.tilVarsel(rs) },
-            Status.IKKE_SENDT.name, antall
+            Status.OPPRETTET.name, antall
         )
     }
 
-    fun antallSendtIDag(): Int {
+    fun antallBestiltIDag(): Int {
         return jdbcTemplate.queryForObject(
-            "select count(*) from varsel where CAST(sendt AS DATE) = CURRENT_DATE and status = ?",
+            "select count(*) from varsel where CAST(bestilt AS DATE) = CURRENT_DATE",
             { rs, _ -> rs.getInt(1) },
-            Status.SENDT.name
         )
     }
 
-    fun oppdaterSendt(id: String) {
+    fun oppdaterBestilt(varselId: String) {
         jdbcTemplate.update(
-            "update varsel set status = ?, sendt = ? where id = ?",
-			Status.SENDT.name, LocalDateTime.now(), id
+            "update varsel set status = ?, bestilt = ? where varsel_id = ?",
+			Status.BESTILT.name, LocalDateTime.now(), varselId
         )
     }
 
@@ -85,24 +86,31 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun oppdaterStatusUtenTimeStamp(varselId: String, status: Status) {
+    fun oppdaterSendt(varselId: String) {
+        jdbcTemplate.update(
+            "update varsel set status = ?, sendt = ? where varsel_id = ?",
+            Status.SENDT.name, LocalDateTime.now(), varselId
+        )
+    }
+    fun oppdaterFeilet(varselId: String) {
         jdbcTemplate.update(
             "update varsel set status = ? where varsel_id = ?",
-            status, varselId
+            Status.FEILET.name, varselId
         )
     }
 }
 
 
 data class Varsel(
-	val id: UUID,
-	val mottakerFnr: String,
-	val status: Status,
-	val type: VarselType,
-	val varselId: UUID,
-	val opprettet: LocalDateTime,
-	val åpnet: LocalDateTime?,
-	val sendt: LocalDateTime?,
+    val id: UUID,
+    val mottakerFnr: String,
+    val status: Status,
+    val type: VarselType,
+    val varselId: UUID,
+    val opprettet: LocalDateTime,
+    val bestilt: LocalDateTime?,
+    val sendt: LocalDateTime?,
+    val åpnet: LocalDateTime?,
 ) {
     companion object {
         fun tilVarsel(rs: ResultSet) = Varsel(
@@ -112,14 +120,15 @@ data class Varsel(
             type = VarselType.valueOf(rs.getString("type")),
 			varselId = rs.getObject("varsel_id", UUID::class.java),
             opprettet = rs.getObject("opprettet", LocalDateTime::class.java),
-            åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
+            bestilt = rs.getObject("bestilt", LocalDateTime::class.java),
             sendt = rs.getObject("sendt", LocalDateTime::class.java),
+            åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
         )
     }
 }
 
 enum class Status {
-	IKKE_SENDT, SENDT, SENDT_TIL_BRUKER, ÅPNET, FEIL
+	OPPRETTET, BESTILT, SENDT, ÅPNET, FEILET
 }
 
 enum class VarselType {

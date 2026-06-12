@@ -1,7 +1,6 @@
 package no.nav.ufore.varsler.sendVarsel
 
 import io.getunleash.Unleash
-import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -28,20 +27,20 @@ class SendVarslerService(
             return
         }
 
-        val antallSendtIDag = varselRepository.antallSendtIDag()
-        if (antallSendtIDag >= maksAntallPerDag) {
+        val antallBestiltIDag = varselRepository.antallBestiltIDag()
+        if (antallBestiltIDag >= maksAntallPerDag) {
             logger.info("Dagens utsending er ferdig, avslutter")
             return
         }
 
-        val antallSkalSende = maksAntallPerDag - antallSendtIDag
-        val ikkeSendte = varselRepository.hentIkkeSendte(antallSkalSende)
-        logger.info("Fant ${ikkeSendte.size} ikke sendte varsler, sender disse")
+        val antallSkalBestille = maksAntallPerDag - antallBestiltIDag
+        val ikkeBestilte = varselRepository.hentOpprettet(antallSkalBestille)
+        logger.info("Fant ${ikkeBestilte.size} ikke bestilte varsler, sender disse")
 
-        ikkeSendte.forEach {
+        ikkeBestilte.forEach {
             try {
                 varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr, varselTekst))
-                varselRepository.oppdaterSendt(it.id.toString())
+                varselRepository.oppdaterBestilt(it.varselId.toString())
             } catch (e: Exception) {
                 logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}", e)
             }
