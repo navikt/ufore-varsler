@@ -77,6 +77,20 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 			Status.SENDT.name, LocalDateTime.now(), id
         )
     }
+
+    fun oppdaterÅpnet(id: String) {
+        jdbcTemplate.update(
+            "update varsel set status = ?, aapnet = ? where id = ?",
+            Status.ÅPNET.name, LocalDateTime.now(), id
+        )
+    }
+
+    fun oppdaterFeilet(id: String) {
+        jdbcTemplate.update(
+            "update varsel set status = ? where id = ?",
+            Status.FEIL.name, id
+        )
+    }
 }
 
 
