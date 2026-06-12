@@ -2,6 +2,7 @@ package no.nav.ufore.varsler.sendVarsel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.tms.varsel.action.Varseltype
+import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -31,9 +32,13 @@ class VarselStatusConsumer(
             varselRepository.oppdaterÅpnet(hendelse.varselId)
         }
 
+        if (hendelse.status == EksternStatus.sendt) {
+            varselRepository.oppdaterStatusUtenTimeStamp(hendelse.varselId, Status.SENDT_TIL_BRUKER)
+        }
+
         if (hendelse.status == EksternStatus.feilet) {
             logger.warn("Varsel med id ${hendelse.varselId} feilet ved sending")
-            varselRepository.oppdaterFeilet(hendelse.varselId)
+            varselRepository.oppdaterStatusUtenTimeStamp(hendelse.varselId, Status.FEIL)
         }
 	}
 }

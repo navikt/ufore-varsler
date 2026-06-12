@@ -78,17 +78,17 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun oppdaterÅpnet(id: String) {
+    fun oppdaterÅpnet(varselId: String) {
         jdbcTemplate.update(
-            "update varsel set status = ?, aapnet = ? where id = ?",
-            Status.ÅPNET.name, LocalDateTime.now(), id
+            "update varsel set status = ?, aapnet = ? where varsel_id = ?",
+            Status.ÅPNET.name, LocalDateTime.now(), varselId
         )
     }
 
-    fun oppdaterFeilet(id: String) {
+    fun oppdaterStatusUtenTimeStamp(varselId: String, status: Status) {
         jdbcTemplate.update(
-            "update varsel set status = ? where id = ?",
-            Status.FEIL.name, id
+            "update varsel set status = ? where varsel_id = ?",
+            status, varselId
         )
     }
 }
@@ -119,7 +119,7 @@ data class Varsel(
 }
 
 enum class Status {
-	IKKE_SENDT, SENDT, ÅPNET, FEIL
+	IKKE_SENDT, SENDT, SENDT_TIL_BRUKER, ÅPNET, FEIL
 }
 
 enum class VarselType {
