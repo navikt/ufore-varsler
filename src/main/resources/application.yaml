@@ -33,6 +33,8 @@ app:
   unleash:
     url: ${UNLEASH_SERVER_API_URL}/api
     token: ${UNLEASH_SERVER_API_TOKEN}
+  texas:
+    token-introspection-endpoint: ${NAIS_TOKEN_INTROSPECTION_ENDPOINT}
   kafka:
     min-side:
       varsel-hendelse: min-side.aapen-varsel-hendelse-v1

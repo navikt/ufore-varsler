@@ -4,3 +4,7 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
+app:
+  texas:
+    token-introspection-endpoint: http://localhost:0/not-in-use
