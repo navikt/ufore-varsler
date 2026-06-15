@@ -2,12 +2,14 @@ package no.nav.ufore.varsler.varselStatus
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
+@Profile("!job")
 @Component
 class TexasTokenValidator(
     @Value("\${app.texas.token-introspection-endpoint}")
