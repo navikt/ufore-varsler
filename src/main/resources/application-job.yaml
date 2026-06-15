@@ -4,3 +4,7 @@ spring:
   kafka:
     listener:
       auto-startup: false
+
+app:
+  texas:
+    token-introspection-endpoint: http://localhost:0/not-in-use

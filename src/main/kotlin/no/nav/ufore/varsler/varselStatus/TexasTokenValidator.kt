@@ -9,7 +9,6 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
-@Profile("!job")
 @Component
 class TexasTokenValidator(
     @Value("\${app.texas.token-introspection-endpoint}")
