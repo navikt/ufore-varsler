@@ -22,6 +22,8 @@ spec:
         databases:
           - name: ufore-varsler
             envVarPrefix: DB
+  tokenx:
+    enabled: true
   accessPolicy:
     outbound:
       external:
