@@ -9,5 +9,5 @@ import org.springframework.stereotype.Service
 class VarselStatusService(private val varselRepository: VarselRepository) {
 
     fun harMottattVarsel(fnr: String): Boolean =
-        varselRepository.hent(fnr, VarselType.UNGE_MED_UFORE)?.status == Status.SENDT
+        varselRepository.hent(fnr, VarselType.UNGE_MED_UFORE)?.status in listOf(Status.SENDT, Status.ÅPNET)
 }
