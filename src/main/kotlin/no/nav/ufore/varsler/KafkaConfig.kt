@@ -16,9 +16,10 @@ class KafkaConfig {
     @Bean
     fun errorHandler(): DefaultErrorHandler {
         // Prøver å lese feilende Kafka-meldinger uendelig mange ganger med 5 sek intervall
-        return DefaultErrorHandler(
-            { melding, e -> logger.error("Kafkamelding feilet, partition ${melding.partition()}, topic ${melding.topic()}, offset ${melding.offset()}", e) },
-            FixedBackOff(DEFAULT_INTERVAL, UNLIMITED_ATTEMPTS)
-        )
+        return DefaultErrorHandler(FixedBackOff(DEFAULT_INTERVAL, UNLIMITED_ATTEMPTS)).also {
+            it.setRetryListeners({ record, exception, deliveryAttempt ->
+                logger.error("Kafkamelding feilet (forsøk $deliveryAttempt), partition=${record.partition()}, topic=${record.topic()}, offset=${record.offset()}", exception)
+            })
+        }
     }
 }
