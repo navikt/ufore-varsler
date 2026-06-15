@@ -31,7 +31,7 @@ dependencies {
 	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("no.nav.tms.varsel:kotlin-builder:2.2.0")
-	implementation("io.getunleash:unleash-client-java:9.3.2")
+	implementation("io.getunleash:unleash-client-java:12.2.2")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
