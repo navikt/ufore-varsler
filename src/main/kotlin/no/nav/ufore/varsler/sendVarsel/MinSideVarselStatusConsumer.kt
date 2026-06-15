@@ -2,6 +2,7 @@ package no.nav.ufore.varsler.sendVarsel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.tms.varsel.action.Varseltype
+import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -27,13 +28,20 @@ class MinSideVarselStatusConsumer(
 		if (minSideHendelse.appnavn != "ufore-varsler") return
 
         logger.info("Mottok varselhendelse fra Min side: {}", minSideHendelse)
-
-        if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
-            varselRepository.oppdaterÅpnet(minSideHendelse.varselId)
-        }
+        val varsel = varselRepository.hent(minSideHendelse.varselId)
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
+            if (varsel?.status != Status.BESTILT) {
+                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, MinSideEksternStatus: ${minSideHendelse.status}. Feil status i database: ${varsel?.status}, prøver igjen")
+            }
             varselRepository.oppdaterSendt(minSideHendelse.varselId)
+        }
+
+        if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
+            if (varsel?.status != Status.SENDT) {
+                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, eventName: ${minSideHendelse.eventName}. Feil status i database: ${varsel?.status}, prøver igjen")
+            }
+            varselRepository.oppdaterÅpnet(minSideHendelse.varselId)
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.feilet) {
@@ -42,6 +50,8 @@ class MinSideVarselStatusConsumer(
         }
 	}
 }
+
+class FeilStatusException(message: String) : Exception(message)
 
 data class MinSideVarselHendelse(
     @JsonProperty("@event_name")

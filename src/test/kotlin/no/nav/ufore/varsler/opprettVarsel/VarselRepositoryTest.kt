@@ -39,7 +39,7 @@ class VarselRepositoryTest {
         assertNull(varsel.sendt)
 		assertNotNull(varsel.varselId)
 
-		val hentetVarsel = assertNotNull(repository.hent(varsel.id.toString()))
+		val hentetVarsel = assertNotNull(repository.hent(varsel.varselId.toString()))
         assertEquals(varsel.id, hentetVarsel.id)
         assertEquals("12345678910", hentetVarsel.mottakerFnr)
         assertEquals(Status.OPPRETTET, hentetVarsel.status)
@@ -132,7 +132,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		repository.oppdaterBestilt(varsel.varselId.toString())
 
-		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
 		assertEquals(Status.BESTILT, oppdatert.status)
 		assertNotNull(oppdatert.bestilt)
 	}
@@ -144,7 +144,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		repository.oppdaterÅpnet(varsel.varselId.toString())
 
-		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
 		assertEquals(Status.ÅPNET, oppdatert.status)
 		assertNotNull(oppdatert.åpnet)
 	}
@@ -156,7 +156,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		repository.oppdaterSendt(varsel.varselId.toString())
 
-		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
 		assertEquals(Status.SENDT, oppdatert.status)
 		assertNotNull(oppdatert.sendt)
 	}
@@ -168,7 +168,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
 		repository.oppdaterFeilet(varsel.varselId.toString())
 
-		val oppdatert = assertNotNull(repository.hent(varsel.id.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
 		assertEquals(Status.FEILET, oppdatert.status)
 	}
 

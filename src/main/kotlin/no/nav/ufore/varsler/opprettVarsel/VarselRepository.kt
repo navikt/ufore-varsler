@@ -41,11 +41,11 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 		return varsel
 	}
 
-	fun hent(id: String): Varsel? {
+	fun hent(varselId: String): Varsel? {
 		return jdbcTemplate.query(
-			"select * from varsel where id = ?",
+			"select * from varsel where varsel_id = ?",
 			{ rs, _ -> Varsel.tilVarsel(rs) },
-			id
+			varselId
 		).firstOrNull()
 	}
 

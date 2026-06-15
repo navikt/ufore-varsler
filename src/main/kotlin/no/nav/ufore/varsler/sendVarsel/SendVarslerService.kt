@@ -1,6 +1,7 @@
 package no.nav.ufore.varsler.sendVarsel
 
 import io.getunleash.Unleash
+import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
