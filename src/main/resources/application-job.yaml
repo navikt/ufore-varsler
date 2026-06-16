@@ -4,6 +4,8 @@ spring:
   kafka:
     listener:
       auto-startup: false
+  flyway:
+    enabled: false
 
 app:
   texas:

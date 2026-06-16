@@ -179,6 +179,6 @@ class VarselRepositoryTest {
 	).apply {
 		setDriverClassName("org.h2.Driver")
 	}.also {
-		Flyway.configure().dataSource(it).load().migrate()
+		Flyway.configure().dataSource(it).locations("classpath:db/migration/common").load().migrate()
 	}
 }
