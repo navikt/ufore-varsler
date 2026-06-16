@@ -18,7 +18,6 @@ class SendVarslerService(
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val varselTekst = "Du har fått et varsel fra Nav. Logg inn på nav.no for å se mer."
 
     fun execute() {
         logger.info("Starter jobb for å sende varsler")
@@ -40,7 +39,7 @@ class SendVarslerService(
 
         ikkeBestilte.forEach {
             try {
-                varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr, varselTekst))
+                varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr))
                 varselRepository.oppdaterBestilt(it.varselId.toString())
             } catch (e: Exception) {
                 logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}", e)
