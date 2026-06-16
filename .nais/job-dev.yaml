@@ -34,7 +34,7 @@ spec:
     - secret: ufore-varsler-unleash-api-token
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: job
+      value: job,dev
     - name: KAFKA_SECURITY_PROTOCOL
       value: SSL
     - name: LOGGING_CONFIG

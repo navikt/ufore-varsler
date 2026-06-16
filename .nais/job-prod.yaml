@@ -32,7 +32,7 @@
 #      memory: 256Mi
 #  env:
 #    - name: SPRING_PROFILES_ACTIVE
-#      value: job
+#      value: job,prod
 #    - name: KAFKA_SECURITY_PROTOCOL
 #      value: SSL
 #    - name: LOGGING_CONFIG
