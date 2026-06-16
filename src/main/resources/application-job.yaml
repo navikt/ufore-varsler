@@ -7,10 +7,10 @@ spring:
   flyway:
     enabled: false
   datasource:
-    url: ${DB_UFORE_VARSLER_SEND_JOBB_JDBC_URL}
-    username: ${DB_UFORE_VARSLER_SEND_JOBB_USERNAME}
-    password: ${DB_UFORE_VARSLER_SEND_JOBB_PASSWORD}
     hikari:
+      jdbc-url: ${DB_UFORE_VARSLER_SEND_JOBB_JDBC_URL}
+      username: ${DB_UFORE_VARSLER_SEND_JOBB_USERNAME}
+      password: ${DB_UFORE_VARSLER_SEND_JOBB_PASSWORD}
       data-source-properties:
         socketFactory: com.google.cloud.sql.postgres.SocketFactory
         cloudSqlInstance: ufore-dev-dfc9:europe-north1:ufore-varsler
