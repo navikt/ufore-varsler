@@ -6,6 +6,8 @@ spring:
       auto-startup: false
   flyway:
     enabled: false
+  datasource:
+    url: ${DB_UFORE_VARSLER_SEND_JOBB_JDBC_URL}
 
 app:
   texas:
