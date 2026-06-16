@@ -36,6 +36,8 @@ spec:
         databases:
           - name: ufore-varsler
             envVarPrefix: DB
+            users:
+              - name: ufore-varsler-send-jobb
   replicas:
     min: 1
     max: 1
