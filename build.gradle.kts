@@ -37,6 +37,7 @@ dependencies {
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("com.google.cloud.sql:postgres-socket-factory:1.28.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
