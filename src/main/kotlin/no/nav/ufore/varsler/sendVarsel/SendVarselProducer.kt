@@ -19,7 +19,7 @@ class SendVarselProducer(
 	@Value("\${app.kafka.min-side.brukervarsel}") private val producerTopic: String,
 	@Value("\${NAIS_CLUSTER_NAME:local}") private val cluster: String,
 	@Value("\${NAIS_NAMESPACE:local}") private val namespace: String,
-	@Value("\${spring.application.name}}") private val appnavn: String,
+	@Value("\${NAIS_APP_NAME:\${spring.application.name}}") private val appnavn: String,
 	@Value("\${app.dine-muligheter-url}") private val dineMuligheterUrl: String,
 ) {
 	private val logger = LoggerFactory.getLogger(javaClass)
