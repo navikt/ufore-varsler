@@ -19,52 +19,52 @@ class SendVarselProducer(
 	@Value("\${app.kafka.min-side.brukervarsel}") private val producerTopic: String,
 	@Value("\${NAIS_CLUSTER_NAME:local}") private val cluster: String,
 	@Value("\${NAIS_NAMESPACE:local}") private val namespace: String,
-    @Value("\${NAIS_APP_NAME:\${spring.application.name}}") private val appnavn: String,
-    @Value("\${app.dine-muligheter-url}") private val dineMuligheterUrl: String,
+	@Value("\${NAIS_APP_NAME:\${spring.application.name}}") private val appnavn: String,
+	@Value("\${app.dine-muligheter-url}") private val dineMuligheterUrl: String,
 ) {
 	private val logger = LoggerFactory.getLogger(javaClass)
 
 	fun sendBeskjed(request: SendVarselRequest): SendResult {
 		val ident = request.ident.trim()
-        val tekst = "dette er en beskjed"
 
 		if (!ident.matches(Regex("\\d{11}"))) {
 			throw ResponseStatusException(HttpStatus.BAD_REQUEST, "ident må bestå av 11 siffer")
 		}
 
-		if (tekst.isBlank()) {
-			throw ResponseStatusException(HttpStatus.BAD_REQUEST, "tekst kan ikke være tom")
+		val melding = try {
+			VarselActionBuilder.opprett {
+				this.type = Varseltype.Beskjed
+				this.link = dineMuligheterUrl
+				this.varselId = request.varselId
+				this.ident = ident
+				this.sensitivitet = Sensitivitet.Substantial
+				this.tekst = Tekst(
+					spraakkode = "nb",
+					tekst = UNGE_MED_UFORE_VARSEL,
+					default = true,
+				)
+				this.eksternVarsling {
+					preferertKanal = EksternKanal.SMS
+					smsVarslingstekst = UNGE_MED_UFORE_SMS
+				}
+				this.produsent = Produsent(cluster, namespace, appnavn)
+				this.aktivFremTil = ZonedDateTime.of(LocalDateTime.of(2026, 12, 31, 23, 59), ZoneId.of("Europe/Oslo"))
+			}
+		} catch (e: VarselValidationException) {
+			logger.error("Validering av varsel feilet for varselId=${request.varselId}: ${e.errors}", e)
+			throw e
 		}
 
-		val melding = VarselActionBuilder.opprett {
-			this.type = Varseltype.Beskjed
-            this.link = dineMuligheterUrl
-			this.varselId = request.varselId
-			this.ident = ident
-			this.sensitivitet = Sensitivitet.Substantial
-			this.tekst = Tekst(
-				spraakkode = "nb",
-                tekst = UNGE_MED_UFORE_VARSEL,
-				default = true,
-			)
-            this.eksternVarsling {
-                preferertKanal = EksternKanal.SMS
-                smsVarslingstekst = UNGE_MED_UFORE_SMS
-            }
-			this.produsent = Produsent(cluster, namespace, appnavn)
-            this.aktivFremTil = ZonedDateTime.of(LocalDateTime.of(2026, 12, 31, 23, 59), ZoneId.of("Europe/Oslo"))
-		}
+		kafkaTemplate.send(producerTopic, request.varselId, melding).get(1, TimeUnit.SECONDS)
 
-        kafkaTemplate.send(producerTopic, request.varselId, melding).get(1, TimeUnit.SECONDS)
-
-        logger.info("Sendte varsel med id=${request.varselId}")
-        return SendResult(request.varselId)
+		logger.info("Sendte varsel med id=${request.varselId}")
+		return SendResult(request.varselId)
 	}
 }
 
 data class SendResult(val varselId: String)
 
 data class SendVarselRequest(
-    val varselId: String,
-    val ident: String,
+	val varselId: String,
+	val ident: String,
 )
