@@ -9,6 +9,7 @@ spring:
   datasource:
     hikari:
       jdbc-url: ${DB_JDBC_URL}
+      driver-class-name: org.postgresql.Driver
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
     client-id: ${spring.application.name}
