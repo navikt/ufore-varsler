@@ -1,9 +1,11 @@
 package no.nav.ufore.varsler.sendVarsel
 
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.springframework.kafka.core.KafkaTemplate
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class SendVarselProducerTest {
 
@@ -20,6 +22,10 @@ class SendVarselProducerTest {
 
     @Test
     fun `sendBeskjed skal ikke feile`() {
+        every {
+            kafkaTemplate.send(any(), any(), any())
+        } returns CompletableFuture.completedFuture(mockk(relaxed = true))
+
         val request = SendVarselRequest(
             varselId = UUID.randomUUID().toString(),
             ident = "12345678901",
