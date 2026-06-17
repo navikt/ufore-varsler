@@ -8,7 +8,7 @@ spring:
     enabled: false
   datasource:
     hikari:
-      jdbc-url: ${DB_UFORE_VARSLER_SEND_JOBB_JDBC_URL}
+      jdbc-url: jdbc:postgresql://${DB_UFORE_VARSLER_SEND_JOBB_HOST}:${DB_UFORE_VARSLER_SEND_JOBB_PORT}/${DB_UFORE_VARSLER_SEND_JOBB_DATABASE}
       username: ${DB_UFORE_VARSLER_SEND_JOBB_USERNAME}
       password: ${DB_UFORE_VARSLER_SEND_JOBB_PASSWORD}
       data-source-properties:
