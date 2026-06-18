@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
 import java.time.ZonedDateTime
+import java.util.UUID
 
 // https://navikt.github.io/tms-dokumentasjon/varsler/produsere/#overvaking-av-varsler
 @Component
@@ -58,7 +59,7 @@ data class MinSideVarselHendelse(
 	val eventName: MinSideEventName,
     val status: MinSideEksternStatus? = null,
     val varselType: Varseltype? = null,
-    val varselId: String,
+    val varselId: UUID,
     val namespace: String,
     val appnavn: String,
     val tidspunkt: ZonedDateTime

@@ -41,7 +41,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 		return varsel
 	}
 
-	fun hent(varselId: String): Varsel? {
+	fun hent(varselId: UUID): Varsel? {
 		return jdbcTemplate.query(
 			"select * from varsel where varsel_id = ?",
 			{ rs, _ -> Varsel.tilVarsel(rs) },
@@ -72,27 +72,27 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun oppdaterBestilt(varselId: String) {
+    fun oppdaterBestilt(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set status = ?, bestilt = ? where varsel_id = ?",
 			Status.BESTILT.name, LocalDateTime.now(), varselId
         )
     }
 
-    fun oppdaterÅpnet(varselId: String) {
+    fun oppdaterÅpnet(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set status = ?, aapnet = ? where varsel_id = ?",
             Status.ÅPNET.name, LocalDateTime.now(), varselId
         )
     }
 
-    fun oppdaterSendt(varselId: String) {
+    fun oppdaterSendt(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set status = ?, sendt = ? where varsel_id = ?",
             Status.SENDT.name, LocalDateTime.now(), varselId
         )
     }
-    fun oppdaterFeilet(varselId: String) {
+    fun oppdaterFeilet(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set status = ? where varsel_id = ?",
             Status.FEILET.name, varselId

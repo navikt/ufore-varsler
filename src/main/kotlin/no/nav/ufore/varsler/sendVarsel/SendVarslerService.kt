@@ -40,7 +40,7 @@ class SendVarslerService(
         ikkeBestilte.forEach {
             try {
                 varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr))
-                varselRepository.oppdaterBestilt(it.varselId.toString())
+                varselRepository.oppdaterBestilt(it.varselId)
             } catch (e: Exception) {
                 logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}", e)
             }

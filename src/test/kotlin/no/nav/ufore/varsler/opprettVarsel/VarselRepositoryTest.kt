@@ -39,7 +39,7 @@ class VarselRepositoryTest {
         assertNull(varsel.sendt)
 		assertNotNull(varsel.varselId)
 
-		val hentetVarsel = assertNotNull(repository.hent(varsel.varselId.toString()))
+		val hentetVarsel = assertNotNull(repository.hent(varsel.varselId))
         assertEquals(varsel.id, hentetVarsel.id)
         assertEquals("12345678910", hentetVarsel.mottakerFnr)
         assertEquals(Status.OPPRETTET, hentetVarsel.status)
@@ -89,7 +89,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
         val sendtVarsel = repository.lagre(fnr = "123459156", type = VarselType.UNGE_MED_UFORE)
 
-        repository.oppdaterSendt(sendtVarsel.varselId.toString())
+        repository.oppdaterSendt(sendtVarsel.varselId)
 
 		val opprettet = repository.hentOpprettet(10)
 
@@ -119,8 +119,8 @@ class VarselRepositoryTest {
 		val varsel1 = repository.lagre(fnr = "12345678901", type = VarselType.UNGE_MED_UFORE)
 		val varsel2 = repository.lagre(fnr = "12345678902", type = VarselType.UNGE_MED_UFORE)
         val ikkeBestilt = repository.lagre(fnr = "12345678903", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterBestilt(varsel1.varselId.toString())
-		repository.oppdaterBestilt(varsel2.varselId.toString())
+		repository.oppdaterBestilt(varsel1.varselId)
+		repository.oppdaterBestilt(varsel2.varselId)
 
 		assertEquals(2, repository.antallBestiltIDag())
 	}
@@ -130,9 +130,9 @@ class VarselRepositoryTest {
 		val repository = VarselRepository(jdbcTemplate)
 
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterBestilt(varsel.varselId.toString())
+		repository.oppdaterBestilt(varsel.varselId)
 
-		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
 		assertEquals(Status.BESTILT, oppdatert.status)
 		assertNotNull(oppdatert.bestilt)
 	}
@@ -142,9 +142,9 @@ class VarselRepositoryTest {
 		val repository = VarselRepository(jdbcTemplate)
 
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterÅpnet(varsel.varselId.toString())
+		repository.oppdaterÅpnet(varsel.varselId)
 
-		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
 		assertEquals(Status.ÅPNET, oppdatert.status)
 		assertNotNull(oppdatert.åpnet)
 	}
@@ -154,9 +154,9 @@ class VarselRepositoryTest {
 		val repository = VarselRepository(jdbcTemplate)
 
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterSendt(varsel.varselId.toString())
+		repository.oppdaterSendt(varsel.varselId)
 
-		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
 		assertEquals(Status.SENDT, oppdatert.status)
 		assertNotNull(oppdatert.sendt)
 	}
@@ -166,9 +166,9 @@ class VarselRepositoryTest {
 		val repository = VarselRepository(jdbcTemplate)
 
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterFeilet(varsel.varselId.toString())
+		repository.oppdaterFeilet(varsel.varselId)
 
-		val oppdatert = assertNotNull(repository.hent(varsel.varselId.toString()))
+		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
 		assertEquals(Status.FEILET, oppdatert.status)
 	}
 
