@@ -4,7 +4,15 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <decorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMask>
+                    <value>\d{11}</value>
+                    <value>\d{6}\s\d{5}</value>
+                    <mask>***********</mask>
+                </valueMask>
+            </decorator>
+        </encoder>
     </appender>
 
     <root level="INFO">
