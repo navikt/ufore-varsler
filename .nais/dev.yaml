@@ -56,7 +56,9 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: din-uforetrygd-backend
+        - application: din-uforetrygd-frontend-borger
+          cluster: dev-gcp
+        - application: din-uforetrygd-frontend-veileder
           cluster: dev-gcp
     outbound:
       external:
