@@ -38,7 +38,7 @@ class MinSideVarselStatusConsumerTest {
         varselType = Varseltype.Beskjed,
         varselId = UUID.randomUUID(),
         namespace = "ufore",
-        appnavn = "ufore-varsler",
+        appnavn = "ufore-varsler-send-jobb",
         tidspunkt = ZonedDateTime.now(),
     )
 
