@@ -13,6 +13,9 @@ spec:
   concurrencyPolicy: Forbid
   ttlSecondsAfterFinished: 60
   observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
     logging:
       destinations:
         - id: elastic
@@ -29,6 +32,9 @@ spec:
     outbound:
       external:
         - host: ufore-unleash-api.nav.cloud.nais.io
+      rules:
+        - application: prometheus-pushgateway
+          namespace: nais-system
   envFrom:
     - secret: ufore-varsler-unleash-api-token
     - secret: google-sql-ufore-varsler-ufore-varsler-ufore-varsler-s-b6657f5a
@@ -40,3 +46,5 @@ spec:
       value: SSL
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
+    - name: PUSH_GATEWAY_ADDRESS
+      value: prometheus-pushgateway.nais-system:9091

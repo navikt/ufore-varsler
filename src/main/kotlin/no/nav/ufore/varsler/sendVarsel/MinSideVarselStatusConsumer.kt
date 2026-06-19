@@ -5,6 +5,7 @@ import no.nav.tms.varsel.action.Varseltype
 import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
@@ -17,6 +18,7 @@ import java.util.UUID
 class MinSideVarselStatusConsumer(
     private val objectMapper: ObjectMapper,
     private val varselRepository: VarselRepository,
+    @Value("\${spring.application.name}") private val appName: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -26,7 +28,7 @@ class MinSideVarselStatusConsumer(
 	)
 	fun consume(@Payload message: String) {
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
-		if (minSideHendelse.appnavn != "ufore-varsler-send-jobb") return
+		if (minSideHendelse.appnavn != appName) return
 
         logger.info("Mottok varselhendelse fra Min side: {}", minSideHendelse)
         val varsel = varselRepository.hent(minSideHendelse.varselId)

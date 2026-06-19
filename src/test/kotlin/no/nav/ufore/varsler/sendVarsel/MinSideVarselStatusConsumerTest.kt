@@ -16,9 +16,10 @@ import kotlin.test.Test
 
 class MinSideVarselStatusConsumerTest {
 
+    val appName = "ufore-varsler-send-jobb"
     val objectMapper = ObjectMapper()
     val varselRepository = mockk<VarselRepository>()
-    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository)
+    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository, appName)
 
     val varsel = Varsel(
         id = UUID.randomUUID(),
@@ -38,7 +39,7 @@ class MinSideVarselStatusConsumerTest {
         varselType = Varseltype.Beskjed,
         varselId = UUID.randomUUID(),
         namespace = "ufore",
-        appnavn = "ufore-varsler-send-jobb",
+        appnavn = appName,
         tidspunkt = ZonedDateTime.now(),
     )
 

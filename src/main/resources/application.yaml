@@ -45,6 +45,8 @@ app:
       topic: ufore.varsler
       consumer-group-id: ufore-varsler-consumer
   dine-muligheter-url: https://nav.no/uforetrygd/selvbetjening/dine-muligheter
+  pushgateway:
+    address: ${PUSH_GATEWAY_ADDRESS:prometheus-pushgateway.nais-system:9091}
 
 management:
   endpoint:

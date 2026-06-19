@@ -1,9 +1,10 @@
 package no.nav.ufore.varsler.sendVarsel
 
 import io.getunleash.Unleash
-import no.nav.ufore.varsler.opprettVarsel.Status
+import io.prometheus.metrics.exporter.pushgateway.PushGateway
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,6 +12,8 @@ class SendVarslerService(
     private val unleash: Unleash,
     private val varselRepository: VarselRepository,
     private val varselProducer: SendVarselProducer,
+    @Value("\${app.pushgateway.address}") private val pushGatewayAddress: String,
+    @Value("\${spring.application.name}") private val appName: String,
 ) {
 
     companion object {
@@ -47,5 +50,19 @@ class SendVarslerService(
         }
 
         logger.info("Varsler sendt, avslutter")
+
+        pushMetrikker()
+    }
+
+    private fun pushMetrikker() {
+        try {
+            PushGateway.builder()
+                .address(pushGatewayAddress)
+                .job(appName)
+                .build()
+                .pushAdd()
+        } catch (e: Exception) {
+            logger.error("Klarte ikke å pushe metrikker til Pushgateway: ${e.message}")
+        }
     }
 }
