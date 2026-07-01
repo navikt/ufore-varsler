@@ -2,6 +2,7 @@ package no.nav.ufore.varsler.sendVarsel
 
 import io.getunleash.Unleash
 import io.prometheus.metrics.exporter.pushgateway.PushGateway
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -12,6 +13,7 @@ class SendVarslerService(
     private val unleash: Unleash,
     private val varselRepository: VarselRepository,
     private val varselProducer: SendVarselProducer,
+    private val meterRegistry: MeterRegistry,
     @Value("\${app.pushgateway.address}") private val pushGatewayAddress: String,
     @Value("\${spring.application.name}") private val appName: String,
 ) {
@@ -44,8 +46,10 @@ class SendVarslerService(
             try {
                 varselProducer.sendBeskjed(SendVarselRequest(it.varselId.toString(), it.mottakerFnr))
                 varselRepository.oppdaterBestilt(it.varselId)
+                meterRegistry.counter("ufore_varsler_bestilt_total").increment()
             } catch (e: Exception) {
                 logger.error("Feil ved sending av varsel med id ${it.id} og varselId ${it.varselId}", e)
+                meterRegistry.counter("ufore_varsler_bestilt_feil_total").increment()
             }
         }
 

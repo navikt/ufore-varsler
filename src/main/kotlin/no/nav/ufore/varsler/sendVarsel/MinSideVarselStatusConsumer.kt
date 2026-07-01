@@ -1,6 +1,7 @@
 package no.nav.ufore.varsler.sendVarsel
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.tms.varsel.action.Varseltype
 import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
@@ -18,6 +19,7 @@ import java.util.UUID
 class MinSideVarselStatusConsumer(
     private val objectMapper: ObjectMapper,
     private val varselRepository: VarselRepository,
+    private val meterRegistry: MeterRegistry,
     @Value("\${spring.application.name}") private val appName: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -38,6 +40,7 @@ class MinSideVarselStatusConsumer(
                 throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, MinSideEksternStatus: ${minSideHendelse.status}. Feil status i database: ${varsel?.status}, prøver igjen")
             }
             varselRepository.oppdaterSendt(minSideHendelse.varselId)
+            meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").increment()
         }
 
         if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
@@ -45,11 +48,13 @@ class MinSideVarselStatusConsumer(
                 throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, eventName: ${minSideHendelse.eventName}. Feil status i database: ${varsel?.status}, prøver igjen")
             }
             varselRepository.oppdaterÅpnet(minSideHendelse.varselId)
+            meterRegistry.counter("ufore_varsler_status_total", "status", "aapnet").increment()
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.feilet) {
             logger.warn("Varsel med id ${minSideHendelse.varselId} feilet ved sending")// feilmelding
             varselRepository.oppdaterFeilet(minSideHendelse.varselId)
+            meterRegistry.counter("ufore_varsler_status_total", "status", "feilet").increment()
         }
 	}
 }
