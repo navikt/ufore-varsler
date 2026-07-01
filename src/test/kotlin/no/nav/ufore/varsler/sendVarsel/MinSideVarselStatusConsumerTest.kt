@@ -1,5 +1,6 @@
 package no.nav.ufore.varsler.sendVarsel
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tms.varsel.action.Varseltype
@@ -19,7 +20,8 @@ class MinSideVarselStatusConsumerTest {
     val appName = "ufore-varsler-send-jobb"
     val objectMapper = ObjectMapper()
     val varselRepository = mockk<VarselRepository>()
-    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository, appName)
+    val meterRegistry = SimpleMeterRegistry()
+    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository, meterRegistry, appName)
 
     val varsel = Varsel(
         id = UUID.randomUUID(),
