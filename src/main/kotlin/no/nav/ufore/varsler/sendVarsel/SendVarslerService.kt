@@ -1,8 +1,9 @@
 package no.nav.ufore.varsler.sendVarsel
 
 import io.getunleash.Unleash
-import io.prometheus.metrics.exporter.pushgateway.PushGateway
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import io.prometheus.metrics.exporter.pushgateway.PushGateway
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -60,9 +61,13 @@ class SendVarslerService(
 
     private fun pushMetrikker() {
         try {
+            val prometheusRegistry = meterRegistry as? PrometheusMeterRegistry
+                ?: return logger.warn("MeterRegistry er ikke PrometheusMeterRegistry, kan ikke pushe metrikker")
+
             PushGateway.builder()
                 .address(pushGatewayAddress)
                 .job(appName)
+                .registry(prometheusRegistry.prometheusRegistry)
                 .build()
                 .pushAdd()
         } catch (e: Exception) {

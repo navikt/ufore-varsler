@@ -34,7 +34,7 @@ dependencies {
 	implementation("io.getunleash:unleash-client-java:12.2.2")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	implementation("io.micrometer:micrometer-registry-prometheus")
 	implementation("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
