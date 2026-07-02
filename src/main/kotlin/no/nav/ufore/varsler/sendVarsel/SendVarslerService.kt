@@ -72,6 +72,7 @@ class SendVarslerService(
                 .pushAdd()
         } catch (e: Exception) {
             logger.error("Klarte ikke å pushe metrikker til Pushgateway: ${e.message}")
+            meterRegistry.counter("ufore_varsler_pushgateway_feil_total").increment()
         }
     }
 }

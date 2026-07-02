@@ -23,10 +23,15 @@ spec:
 
         - alert: "Høy Kafka consumer lag"
           expr: |
-            max(kafka_consumer_fetch_manager_records_lag_max{app="ufore-varsler"}) > 1000
+            max by (topic) (
+              kafka_consumer_fetch_manager_records_lag_max{
+                app="ufore-varsler",
+                namespace="ufore"
+              }
+            ) > 1000
           for: 5m
           annotations:
-            message: "*ufore-varsler*: Kafka consumer lag er {{ $value }} meldinger – applikasjonen henger etter!"
+            message: "*ufore-varsler*: Kafka consumer lag er {{ $value }} meldinger på topic {{ $labels.topic }} – applikasjonen henger etter!"
             action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1h,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22'))"
           labels:
             severity: warning
@@ -46,3 +51,43 @@ spec:
             namespace: ufore
             ufore_alerts: slack
             alert_type: custom
+
+        - alert: "Høy feilrate ved varselbestilling"
+          expr: |
+            (
+              sum(increase(ufore_varsler_bestilt_feil_total{job="ufore-varsler-send-jobb"}[15m]))
+              /
+              clamp_min(
+                sum(increase(ufore_varsler_bestilt_total{job="ufore-varsler-send-jobb"}[15m]))
+                + sum(increase(ufore_varsler_bestilt_feil_total{job="ufore-varsler-send-jobb"}[15m])),
+                1
+              )
+            ) > 0.05
+          for: 5m
+          annotations:
+            message: |
+              *ufore-varsler*: {{ $value | humanizePercentage }} av varselbestillingene feiler siste 15 min!
+              Sjekk Kafka-producer mot min-side.aapen-brukervarsel-v1 og tilkobling til Min Side.
+            action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22%20AND%20level:%22Error%22'))"
+          labels:
+            severity: critical
+            namespace: ufore
+            ufore_alerts: slack
+            alert_type: custom
+
+        - alert: "Min Side melder feil på SMS-utsending"
+          expr: |
+            sum(increase(ufore_varsler_status_total{status="feilet"}[30m])) > 5
+          for: 5m
+          annotations:
+            message: |
+              *ufore-varsler*: Min Side rapporterer {{ $value }} feilede SMS-utsendelser siste 30 min!
+              Dette betyr at SMS nådde ikke frem til brukerne.
+              Sjekk min-side.aapen-varsel-hendelse-v1 og Min Side-statusside.
+            action: "https://logs.az.nav.no/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1h,to:now))&_a=(index:aca8eb40-54b6-11ec-a9c4-a3e9fab3c3a1,query:(language:kuery,query:'application:%22ufore-varsler%22%20AND%20feilet'))"
+          labels:
+            severity: warning
+            namespace: ufore
+            ufore_alerts: slack
+            alert_type: custom
+

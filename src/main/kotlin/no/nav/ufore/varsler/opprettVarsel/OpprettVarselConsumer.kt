@@ -1,5 +1,6 @@
 package no.nav.ufore.varsler.opprettVarsel
 
+import io.micrometer.core.instrument.MeterRegistry
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
@@ -10,6 +11,7 @@ import tools.jackson.databind.ObjectMapper
 class OpprettVarselConsumer(
     private val objectMapper: ObjectMapper,
     private val varselRepository: VarselRepository,
+    private val meterRegistry: MeterRegistry,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -22,10 +24,12 @@ class OpprettVarselConsumer(
 
         if (varselRepository.hent(melding.fnr, melding.type) != null) {
             logger.info("Varsel med type ${melding.type} finnes allerede")
+            meterRegistry.counter("ufore_varsler_opprettet_duplikat_total", "type", melding.type.name).increment()
             return
         }
 
         val varsel = varselRepository.lagre(melding.fnr, melding.type)
+        meterRegistry.counter("ufore_varsler_opprettet_total", "type", melding.type.name).increment()
 
         logger.info("Lagret varsel med id ${varsel.id}")
     }

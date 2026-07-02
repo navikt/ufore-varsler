@@ -154,12 +154,12 @@
       "id": 9,
       "type": "stat",
       "title": "Varsler bestilt i dag",
-      "description": "Antall varsler sendt til Min Side siste 24 timer.",
+      "description": "Antall nye varsler bestilt siste 24 timer (increase over rullerende 24t-vindu). Maks 300/dag styres av koden.",
       "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "options": {
         "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area"
       },
       "fieldConfig": {
@@ -168,9 +168,9 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 250 },
-              { "color": "red", "value": 300 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 50 }
             ]
           },
           "unit": "short"
@@ -179,8 +179,9 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "sum(increase(ufore_varsler_bestilt_total[24h]))",
-          "legendFormat": "Bestilt",
+          "expr": "sum(increase(ufore_varsler_bestilt_total{job=\"ufore-varsler-send-jobb\"}[24h]))",
+          "legendFormat": "Bestilt siste 24t",
+          "instant": false,
           "refId": "A"
         }
       ]
@@ -207,13 +208,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "sum(increase(ufore_varsler_bestilt_total[5m]))",
+          "expr": "sum(increase(ufore_varsler_bestilt_total{job=\"ufore-varsler-send-jobb\"}[5m]))",
           "legendFormat": "Bestilt",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "sum(increase(ufore_varsler_bestilt_feil_total[5m]))",
+          "expr": "sum(increase(ufore_varsler_bestilt_feil_total{job=\"ufore-varsler-send-jobb\"}[5m]))",
           "legendFormat": "Feil ved bestilling",
           "refId": "B"
         }
@@ -235,15 +236,15 @@
         },
         "overrides": [
           {
-            "matcher": { "id": "byLabelValues", "options": { "label": "status", "value": "sendt" } },
+            "matcher": { "id": "byName", "options": "sendt" },
             "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
           },
           {
-            "matcher": { "id": "byLabelValues", "options": { "label": "status", "value": "aapnet" } },
+            "matcher": { "id": "byName", "options": "aapnet" },
             "properties": [{ "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }]
           },
           {
-            "matcher": { "id": "byLabelValues", "options": { "label": "status", "value": "feilet" } },
+            "matcher": { "id": "byName", "options": "feilet" },
             "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
           }
         ]
@@ -381,6 +382,157 @@
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "expr": "db_client_connections_max{app=\"ufore-varsler\"}",
           "legendFormat": "maks",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Ende-til-ende: bestilt vs. bekreftet sendt (differanse)",
+      "description": "Differanse mellom varsler vi har bestilt hos Min Side og varsler Min Side bekrefter sendt (status=sendt). Positiv verdi betyr varsler i kø hos Min Side. Stor og voksende differanse indikerer forsinkelse eller feil hos Min Side.",
+      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": true },
+          "min": 0
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(increase(ufore_varsler_bestilt_total{job=\"ufore-varsler-send-jobb\"}[1h]))",
+          "legendFormat": "Bestilt (siste 1t)",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(increase(ufore_varsler_status_total{status=\"sendt\"}[1h]))",
+          "legendFormat": "Bekreftet sendt av Min Side (siste 1t)",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(increase(ufore_varsler_bestilt_total{job=\"ufore-varsler-send-jobb\"}[1h])) - sum(increase(ufore_varsler_status_total{status=\"sendt\"}[1h]))",
+          "legendFormat": "Differanse (i kø / ubekreftet)",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Feilrate ved bestilling (%)",
+      "description": "Prosent av bestillingsforsøk som feiler. Over 5% er kritisk. Teller fra ufore_varsler_bestilt_feil_total delt på totalt forsøk (bestilt + feil).",
+      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": true },
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "100 * sum(increase(ufore_varsler_bestilt_feil_total{job=\"ufore-varsler-send-jobb\"}[5m])) / clamp_min(sum(increase(ufore_varsler_bestilt_total{job=\"ufore-varsler-send-jobb\"}[5m])) + sum(increase(ufore_varsler_bestilt_feil_total{job=\"ufore-varsler-send-jobb\"}[5m])), 1)",
+          "legendFormat": "Feilrate %",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "JVM — Heap og GC",
+      "description": "Heap-bruk (used vs. committed vs. maks) og GC-pause-tid fra OTel auto-instrumentering. Heap over 80% av maks er et faresignal.",
+      "gridPos": { "x": 0, "y": 36, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": true },
+          "min": 0
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(jvm_memory_used_bytes{app=\"ufore-varsler\", area=\"heap\"}) by (id)",
+          "legendFormat": "Heap used — {{id}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(jvm_memory_committed_bytes{app=\"ufore-varsler\", area=\"heap\"}) by (id)",
+          "legendFormat": "Heap committed — {{id}}",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(jvm_memory_max_bytes{app=\"ufore-varsler\", area=\"heap\"}) by (id)",
+          "legendFormat": "Heap maks — {{id}}",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "JVM — GC-pause tid (p95)",
+      "description": "GC-pause-varighet p95 per action/cause fra OTel. Pausetid over 200ms kan påvirke HTTP-svartid og Kafka-konsumering.",
+      "gridPos": { "x": 12, "y": 36, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": true },
+          "min": 0
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "histogram_quantile(0.95, sum(rate(jvm_gc_duration_seconds_bucket{app=\"ufore-varsler\"}[5m])) by (le, gc, action))",
+          "legendFormat": "p95 GC — {{gc}} / {{action}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "sum(rate(jvm_gc_duration_seconds_sum{app=\"ufore-varsler\"}[5m])) / sum(rate(jvm_gc_duration_seconds_count{app=\"ufore-varsler\"}[5m]))",
+          "legendFormat": "Gjennomsnitt GC-pause",
           "refId": "B"
         }
       ]
