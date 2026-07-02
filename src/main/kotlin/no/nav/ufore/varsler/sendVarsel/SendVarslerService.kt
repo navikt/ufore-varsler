@@ -27,6 +27,7 @@ class SendVarslerService(
 
     fun execute() {
         logger.info("Starter jobb for å sende varsler")
+        meterRegistry.counter("ufore_varsler_jobb_kjoringer_total").increment()
 
         if (!unleash.isEnabled("ufore-varsler.send-varsler-jobb")) {
             logger.info("Jobb er slått av, avslutter")

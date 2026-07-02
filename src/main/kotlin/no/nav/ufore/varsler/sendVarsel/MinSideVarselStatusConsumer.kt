@@ -32,22 +32,26 @@ class MinSideVarselStatusConsumer(
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
 		if (minSideHendelse.appnavn != appName) return
 
+        // TODO: Nå kaster vi ikke lenger feil når varsler har feil status. Da kan vi miste en overgang.
+        // Spørsmålet er hvor viktig det er? Med denne løsningen lagrer vi alltid "mottatt", men kan miste "sendt"
+        // Når vi kasta feil ble partisjonen helt blokka i det uendelige
         logger.info("Mottok varselhendelse fra Min side: {}", minSideHendelse)
         val varsel = varselRepository.hent(minSideHendelse.varselId)
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
             if (varsel?.status != Status.BESTILT) {
                 meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
-                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, MinSideEksternStatus: ${minSideHendelse.status}. Feil status i database: ${varsel?.status}, prøver igjen")
+                logger.warn("Mottok sendt-hendelse for varselId=${minSideHendelse.varselId} men status i DB er ${varsel?.status} — hopper over")
+                return
             }
             varselRepository.oppdaterSendt(minSideHendelse.varselId)
             meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").increment()
         }
 
         if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
-            if (varsel?.status != Status.SENDT) {
-                meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
-                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, eventName: ${minSideHendelse.eventName}. Feil status i database: ${varsel?.status}, prøver igjen")
+            if (varsel == null) {
+                logger.warn("Mottok inaktivert-hendelse for ukjent varselId=${minSideHendelse.varselId} — hopper over")
+                return
             }
             varselRepository.oppdaterÅpnet(minSideHendelse.varselId)
             meterRegistry.counter("ufore_varsler_status_total", "status", "aapnet").increment()
