@@ -40,7 +40,7 @@ class MinSideVarselStatusConsumerTest {
         eventName = MinSideEventName.eksternStatusOppdatert,
         status = MinSideEksternStatus.sendt,
         varselType = Varseltype.Beskjed,
-        varselId = UUID.randomUUID(),
+        varselId = UUID.randomUUID().toString(),
         namespace = "ufore",
         appnavn = appName,
         tidspunkt = ZonedDateTime.now(),
