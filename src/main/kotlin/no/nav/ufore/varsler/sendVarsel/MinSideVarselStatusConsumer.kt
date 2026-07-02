@@ -30,7 +30,7 @@ class MinSideVarselStatusConsumer(
 	)
 	fun consume(@Payload message: String) {
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
-		if (minSideHendelse.appnavn != appName) return
+		if (minSideHendelse.appnavn != appName || minSideHendelse.appnavn != "ufore-varsler-send-jobb") return
 
         // TODO: Nå kaster vi ikke lenger feil når varsler har feil status. Da kan vi miste en overgang.
         // Spørsmålet er hvor viktig det er? Med denne løsningen lagrer vi alltid "mottatt", men kan miste "sendt"
