@@ -19,11 +19,11 @@ import kotlin.test.assertEquals
 
 class MinSideVarselStatusConsumerTest {
 
-    val appName = "ufore-varsler-send-jobb"
+    val consumerAppName = "ufore-varsler"
     val objectMapper = ObjectMapper()
     val varselRepository = mockk<VarselRepository>(relaxed = true)
     val meterRegistry = SimpleMeterRegistry()
-    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository, meterRegistry, appName)
+    val consumer = MinSideVarselStatusConsumer(objectMapper, varselRepository, meterRegistry, consumerAppName)
 
     val varsel = Varsel(
         id = UUID.randomUUID(),
@@ -43,7 +43,7 @@ class MinSideVarselStatusConsumerTest {
         varselType = Varseltype.Beskjed,
         varselId = UUID.randomUUID().toString(),
         namespace = "ufore",
-        appnavn = appName,
+        appnavn = "ufore-varsler-send-jobb",
         tidspunkt = ZonedDateTime.now(),
     )
 

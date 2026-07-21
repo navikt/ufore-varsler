@@ -30,7 +30,7 @@ class MinSideVarselStatusConsumer(
 	)
 	fun consume(@Payload message: String) {
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
-		if (minSideHendelse.appnavn != appName || minSideHendelse.appnavn != "ufore-varsler-send-jobb") return
+		if (minSideHendelse.appnavn != appName && minSideHendelse.appnavn != "ufore-varsler-send-jobb") return
 
         logger.info("Mottok varselhendelse fra Min side: {}", minSideHendelse)
 
