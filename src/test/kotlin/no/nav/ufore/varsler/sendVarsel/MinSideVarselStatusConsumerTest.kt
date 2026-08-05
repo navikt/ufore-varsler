@@ -61,6 +61,17 @@ class MinSideVarselStatusConsumerTest {
     }
 
     @Test
+    fun `Skal gå videre hvis varselId ikke er en gyldig UUID`() {
+        val hendelseMedUgyldigVarselId = hendelse.copy(varselId = "ugyldig id")
+        val melding = ObjectMapper().writeValueAsString(hendelseMedUgyldigVarselId)
+
+        consumer.consume(melding)
+
+        verify(exactly = 0) { varselRepository.oppdaterSendt(any()) }
+        verify(exactly = 0) { varselRepository.hent(any()) }
+    }
+
+    @Test
     fun `Skal oppdatere status til sendt når hendelse ankommer med riktig DB-status`() {
         every { varselRepository.hent(any()) } returns varsel.copy(status = Status.BESTILT)
 
