@@ -63,7 +63,7 @@ class MinSideVarselStatusConsumer(
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.feilet) {
-            logger.warn("Varsel med id $varselId feilet ved sending")
+            logger.warn("Varsel med id $varselId feilet ved sending, feilmelding: ${minSideHendelse.feilmelding}")
             varselRepository.oppdaterFeilet(varselId)
             meterRegistry.counter("ufore_varsler_status_total", "status", "feilet").increment()
         }
@@ -80,7 +80,8 @@ data class MinSideVarselHendelse(
     val varselId: String, // Min side operer med både UUID og ULID
     val namespace: String,
     val appnavn: String,
-    val tidspunkt: ZonedDateTime
+    val tidspunkt: ZonedDateTime,
+    val feilmelding: String? = null,
 )
 
 enum class MinSideEventName {
