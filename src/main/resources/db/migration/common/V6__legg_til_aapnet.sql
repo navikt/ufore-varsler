@@ -1,0 +1,1 @@
+alter table varsel add column er_aapnet boolean default false;

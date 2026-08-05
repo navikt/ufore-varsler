@@ -35,6 +35,7 @@ class MinSideVarselStatusConsumerTest {
         bestilt = null,
         sendt = null,
         åpnet = null,
+        erÅpnet = false
     )
 
     val hendelse = MinSideVarselHendelse(
@@ -48,16 +49,13 @@ class MinSideVarselStatusConsumerTest {
     )
 
     @Test
-    fun `Skal kaste exception og telle feil_rekkefolge hvis sendt-hendelse ankommer med feil DB-status`() {
+    fun `Skal oppdatere med sendt-hendelse selv om vi mangler en status-overgang i DB`() {
         every { varselRepository.hent(any()) } returns varsel // status=OPPRETTET, ikke BESTILT
 
         val melding = ObjectMapper().writeValueAsString(hendelse)
-        assertThrows<FeilStatusException> {
-            consumer.consume(melding)
-        }
+        consumer.consume(melding)
 
-        verify(exactly = 0) { varselRepository.oppdaterSendt(any()) }
-        assertEquals(1.0, meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").count())
+        verify(exactly = 1) { varselRepository.oppdaterSendt(any()) }
     }
 
     @Test

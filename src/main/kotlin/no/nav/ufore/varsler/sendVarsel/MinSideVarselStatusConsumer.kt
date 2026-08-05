@@ -45,19 +45,11 @@ class MinSideVarselStatusConsumer(
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
-            if (varsel.status != Status.BESTILT) {
-                meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
-                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, MinSideEksternStatus: ${minSideHendelse.status}. Feil status i database: ${varsel?.status}, prøver igjen")
-            }
             varselRepository.oppdaterSendt(varselId)
             meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").increment()
         }
 
         if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
-            if (varsel.status != Status.SENDT) {
-                meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
-                throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, eventName: ${minSideHendelse.eventName}. Feil status i database: ${varsel?.status}, prøver igjen")
-            }
             varselRepository.oppdaterÅpnet(varselId)
             meterRegistry.counter("ufore_varsler_status_total", "status", "aapnet").increment()
         }

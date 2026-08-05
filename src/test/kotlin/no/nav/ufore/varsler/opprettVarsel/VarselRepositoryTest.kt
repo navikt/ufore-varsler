@@ -1,6 +1,7 @@
 package no.nav.ufore.varsler.opprettVarsel
 
 import org.flywaydb.core.Flyway
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.DriverManagerDataSource
@@ -145,7 +146,7 @@ class VarselRepositoryTest {
 		repository.oppdaterÅpnet(varsel.varselId)
 
 		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
-		assertEquals(Status.ÅPNET, oppdatert.status)
+		assertTrue(oppdatert.erÅpnet)
 		assertNotNull(oppdatert.åpnet)
 	}
 

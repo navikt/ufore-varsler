@@ -20,6 +20,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
             bestilt = null,
             sendt = null,
 			åpnet = null,
+            erÅpnet = false
 		)
 
 		jdbcTemplate.update(
@@ -81,8 +82,8 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun oppdaterÅpnet(varselId: UUID) {
         jdbcTemplate.update(
-            "update varsel set status = ?, aapnet = ? where varsel_id = ?",
-            Status.ÅPNET.name, LocalDateTime.now(), varselId
+            "update varsel set er_aapnet = true, aapnet = ? where varsel_id = ?",
+            LocalDateTime.now(), varselId
         )
     }
 
@@ -111,6 +112,7 @@ data class Varsel(
     val bestilt: LocalDateTime?,
     val sendt: LocalDateTime?,
     val åpnet: LocalDateTime?,
+    val erÅpnet: Boolean,
 ) {
     companion object {
         fun tilVarsel(rs: ResultSet) = Varsel(
@@ -123,12 +125,13 @@ data class Varsel(
             bestilt = rs.getObject("bestilt", LocalDateTime::class.java),
             sendt = rs.getObject("sendt", LocalDateTime::class.java),
             åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
+            erÅpnet = rs.getBoolean("er_aapnet")
         )
     }
 }
 
 enum class Status {
-	OPPRETTET, BESTILT, SENDT, ÅPNET, FEILET
+	OPPRETTET, BESTILT, SENDT, FEILET
 }
 
 enum class VarselType {
