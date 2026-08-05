@@ -30,15 +30,17 @@ class MinSideVarselStatusConsumer(
 	)
 	fun consume(@Payload message: String) {
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
-		if (minSideHendelse.appnavn != appName && minSideHendelse.appnavn != "ufore-varsler-send-jobb") return
-
-        logger.info("Mottok varselhendelse fra Min side: {}", minSideHendelse)
+        logger.info("Mottok varselhendelse fra Min side: varselId: ${minSideHendelse.varselId}, status: ${minSideHendelse.status}, eventName: ${minSideHendelse.eventName} appnavn: ${minSideHendelse.appnavn}")
 
         val varselId = UUID.fromString(minSideHendelse.varselId)
         val varsel = varselRepository.hent(varselId)
+        if (varsel == null) {
+            logger.info("Varsel med varselId $varselId ikke funnet i databasen, fortsetter")
+            return
+        }
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
-            if (varsel?.status != Status.BESTILT) {
+            if (varsel.status != Status.BESTILT) {
                 meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
                 throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, MinSideEksternStatus: ${minSideHendelse.status}. Feil status i database: ${varsel?.status}, prøver igjen")
             }
@@ -47,7 +49,7 @@ class MinSideVarselStatusConsumer(
         }
 
         if (minSideHendelse.eventName == MinSideEventName.inaktivert) {
-            if (varsel?.status != Status.SENDT) {
+            if (varsel.status != Status.SENDT) {
                 meterRegistry.counter("ufore_varsler_status_feil_total", "aarsak", "feil_rekkefolge").increment()
                 throw FeilStatusException("Mottar varselId: ${minSideHendelse.varselId}, eventName: ${minSideHendelse.eventName}. Feil status i database: ${varsel?.status}, prøver igjen")
             }
