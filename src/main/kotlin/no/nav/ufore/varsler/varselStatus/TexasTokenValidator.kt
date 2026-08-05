@@ -1,5 +1,6 @@
 package no.nav.ufore.varsler.varselStatus
 
+import com.nimbusds.jwt.JWTParser
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -20,6 +21,13 @@ class TexasTokenValidator(
 
     fun hentFnr(authHeader: String): String? {
         val token = authHeader.removePrefix("Bearer ")
+
+        val issuer = runCatching {
+            JWTParser.parse(token).jwtClaimsSet.issuer
+        }.getOrNull()
+
+        // TODO: Sjekk issuer
+
         val response = runCatching {
             restClient.post()
                 .uri(introspectionEndpoint)
