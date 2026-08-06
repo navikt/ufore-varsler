@@ -20,16 +20,7 @@ class TexasTokenValidator(
     private val logger = LoggerFactory.getLogger(TexasTokenValidator::class.java)
     private val restClient = RestClient.create()
 
-    fun hentFnr(authHeader: String): String? {
-        // hvis veileder: (issuer er entraid|azuread)
-        // hent fnr via request
-
-        // hvis fullmakt: enten
-        // hent fnr via fullmakt cookie (nav-obo)
-        // eller
-
-        val token = authHeader.removePrefix("Bearer ")
-        val brukerType = hentBrukertype(token)
+    fun sjekkGyldigToken(token: String, brukerType: Bruker): IntrospectionResponse {
         val identityProvider = hentIdentityProvider(brukerType)
 
         val response = runCatching {
@@ -43,16 +34,16 @@ class TexasTokenValidator(
 
         if (response == null || !response.active) {
             logger.warn("Ugyldig token, error: ${response?.error}")
-            return null
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
 
-        return response.pid
+        return response
     }
 
     fun hentIdentityProvider(brukerType: Bruker): String {
         return when (brukerType) {
-            Bruker.Ansatt -> "azuread"
             Bruker.Borger -> "tokenx"
+            Bruker.Veileder -> "azuread"
         }
     }
 
@@ -63,19 +54,19 @@ class TexasTokenValidator(
 
         return when {
             issuer?.contains("tokenx") == true -> Bruker.Borger
-            issuer?.contains("azuread") == true -> Bruker.Ansatt
+            issuer?.contains("microsoftonline") == true -> Bruker.Veileder
             else -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
     }
 
-    enum class Bruker { Ansatt, Borger }
+    enum class Bruker { Veileder, Borger }
 
     private data class IntrospectionRequest(
         val identity_provider: String,
         val token: String,
     )
 
-    private data class IntrospectionResponse(
+    data class IntrospectionResponse(
         val active: Boolean,
         val pid: String?,
         val error: String?,
