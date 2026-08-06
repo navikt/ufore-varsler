@@ -3,11 +3,12 @@ package no.nav.ufore.varsler.varselStatus
 import com.nimbusds.jwt.JWTParser
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+import org.springframework.web.server.ResponseStatusException
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
 @Component
@@ -20,19 +21,22 @@ class TexasTokenValidator(
     private val restClient = RestClient.create()
 
     fun hentFnr(authHeader: String): String? {
+        // hvis veileder: (issuer er entraid|azuread)
+        // hent fnr via request
+
+        // hvis fullmakt: enten
+        // hent fnr via fullmakt cookie (nav-obo)
+        // eller
+
         val token = authHeader.removePrefix("Bearer ")
-
-        val issuer = runCatching {
-            JWTParser.parse(token).jwtClaimsSet.issuer
-        }.getOrNull()
-
-        // TODO: Sjekk issuer
+        val brukerType = hentBrukertype(token)
+        val identityProvider = hentIdentityProvider(brukerType)
 
         val response = runCatching {
             restClient.post()
                 .uri(introspectionEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(IntrospectionRequest("tokenx", token))
+                .body(IntrospectionRequest(identityProvider, token))
                 .retrieve()
                 .body<IntrospectionResponse>()
         }.getOrNull()
@@ -44,15 +48,36 @@ class TexasTokenValidator(
 
         return response.pid
     }
+
+    fun hentIdentityProvider(brukerType: Bruker): String {
+        return when (brukerType) {
+            Bruker.Ansatt -> "azuread"
+            Bruker.Borger -> "tokenx"
+        }
+    }
+
+    fun hentBrukertype(token: String): Bruker {
+        val issuer = runCatching {
+            JWTParser.parse(token).jwtClaimsSet.issuer
+        }.getOrNull()
+
+        return when {
+            issuer?.contains("tokenx") == true -> Bruker.Borger
+            issuer?.contains("azuread") == true -> Bruker.Ansatt
+            else -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        }
+    }
+
+    enum class Bruker { Ansatt, Borger }
+
+    private data class IntrospectionRequest(
+        val identity_provider: String,
+        val token: String,
+    )
+
+    private data class IntrospectionResponse(
+        val active: Boolean,
+        val pid: String?,
+        val error: String?,
+    )
 }
-
-private data class IntrospectionRequest(
-    val identity_provider: String,
-    val token: String,
-)
-
-private data class IntrospectionResponse(
-    val active: Boolean,
-    val pid: String?,
-    val error: String?,
-)

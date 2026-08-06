@@ -16,18 +16,6 @@ class VarselStatusController(
 
     @GetMapping("/status")
     fun hentStatus(@RequestHeader("Authorization", required = false) authHeader: String?): ResponseEntity<VarselStatusResponse> {
-
-        // hvis veileder:
-
-        // alternativ 1: returner true
-        // alternativ 2: hent fnr via request
-
-        // hvis fullmakt: enten
-        // alternativ 1: returner true
-
-        // alternativ 2:
-        // hent fnr via fullmakt cookie (nav-obo)
-
         val fnr = authHeader?.let(tokenValidator::hentFnr)
             ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         return ResponseEntity.ok(VarselStatusResponse(varselStatusService.harMottattVarsel(fnr)))
