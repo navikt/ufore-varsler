@@ -2,7 +2,6 @@ package no.nav.ufore.varsler.varselStatus
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/varsler")
 class VarselStatusController(
     private val varselStatusService: VarselStatusService,
-    private val tokenValidator: TexasTokenValidator,
+    private val tokenValidator: TexasService,
 ) {
 
     @PostMapping("/status")
@@ -23,9 +22,32 @@ class VarselStatusController(
 
         val gyldigToken = tokenValidator.sjekkGyldigToken(token, brukerType)
 
+        if (brukerType == Bruker.Veileder) {
+
+        }
+
+
+        /*
+        * ufore-varsler
+
+hvis borger
+    hvis nav-obo-cookie
+        sjekk hasValidRepresentasjonsforhold
+        sjekk adressebeskyttelse
+    hvis ikke cookie
+        Hvis innlogget bruker har adressebeskyttelse (STRENGT_FORTROLIG eller STRENGT_FORTROLIG_UTLAND). Må logge inn med høyt innloggingsnivå (feks Bank ID)
+
+hvis veileder
+    dekrypter pid fra request
+    sjekk at "groups" i token har mist en av nødvendige grupper (basistilgang)
+    sjekk borger er skjermet og veileder kan se på skjerma borger
+    sjekk adressebeskyttelse på borger og om veileder har tilgang til den typen adressebeskyttelse
+        *
+        * */
+
         val fnr = when (brukerType) {
-            TexasTokenValidator.Bruker.Borger -> gyldigToken.pid
-            TexasTokenValidator.Bruker.Veileder -> requestBody?.pid
+            Bruker.Borger -> gyldigToken.pid
+            Bruker.Veileder -> requestBody?.pid
         } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         return ResponseEntity.ok(VarselStatusResponse(varselStatusService.harMottattVarsel(fnr)))

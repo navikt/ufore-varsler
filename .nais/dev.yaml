@@ -61,6 +61,9 @@ spec:
         - application: din-uforetrygd-frontend-veileder
           cluster: dev-gcp
     outbound:
+      rules:
+        - application: pensjon-pid-encryption
+          namespace: pensjon-person
       external:
         - host: ufore-unleash-api.nav.cloud.nais.io
   envFrom:

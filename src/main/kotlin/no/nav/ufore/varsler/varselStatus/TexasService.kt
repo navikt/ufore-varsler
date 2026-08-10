@@ -12,17 +12,20 @@ import org.springframework.web.server.ResponseStatusException
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
 @Component
-class TexasTokenValidator(
+class TexasService(
     @Value("\${app.texas.token-introspection-endpoint}")
     private val introspectionEndpoint: String,
+    @Value("\${app.texas.token-exchange-endpoint}")
+    private val exchangeEndpoint: String,
 ) {
 
-    private val logger = LoggerFactory.getLogger(TexasTokenValidator::class.java)
+    private val logger = LoggerFactory.getLogger(TexasService::class.java)
     private val restClient = RestClient.create()
 
-    fun sjekkGyldigToken(token: String, brukerType: Bruker): IntrospectionResponse {
-        val identityProvider = hentIdentityProvider(brukerType)
+    fun sjekkGyldigToken(token: String): IntrospectionResponse {
+        val brukerType = hentBrukertype(token)
 
+        val identityProvider = hentIdentityProvider(brukerType)
         val response = runCatching {
             restClient.post()
                 .uri(introspectionEndpoint)
@@ -40,14 +43,32 @@ class TexasTokenValidator(
         return response
     }
 
-    fun hentIdentityProvider(brukerType: Bruker): String {
+    fun hentToken(token: String, target: String, brukerType: Bruker): String {
+        val response = runCatching {
+            restClient.post()
+                .uri(exchangeEndpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ExchangeRequest(token, target,hentIdentityProvider(brukerType)))
+                .retrieve()
+                .body<ExchangeResponse>()
+        }.getOrNull()
+
+        if (response == null) {
+            logger.warn("Klarte ikke exchange token")
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,)
+        }
+
+        return response.access_token
+    }
+
+    private fun hentIdentityProvider(brukerType: Bruker): String {
         return when (brukerType) {
             Bruker.Borger -> "tokenx"
-            Bruker.Veileder -> "azuread"
+            Bruker.Veileder -> "entra_id"
         }
     }
 
-    fun hentBrukertype(token: String): Bruker {
+     fun hentBrukertype(token: String): Bruker {
         val issuer = runCatching {
             JWTParser.parse(token).jwtClaimsSet.issuer
         }.getOrNull()
@@ -59,7 +80,7 @@ class TexasTokenValidator(
         }
     }
 
-    enum class Bruker { Veileder, Borger }
+
 
     private data class IntrospectionRequest(
         val identity_provider: String,
@@ -71,4 +92,20 @@ class TexasTokenValidator(
         val pid: String?,
         val error: String?,
     )
+
+    private data class ExchangeRequest(
+        val user_token: String,
+        val target: String,
+        val identity_provider: String,
+    )
+
+    private data class ExchangeResponse(
+        val access_token: String,
+        val expires_in: Int,
+        val token_type: String,
+    )
+
+
 }
+
+enum class Bruker { Veileder, Borger }
