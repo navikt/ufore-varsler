@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class VarselStatusController(
     private val varselStatusService: VarselStatusService,
     private val tokenValidator: TexasService,
+    private val pidEncryptionClient: PidEncryptionClient,
 ) {
 
     @PostMapping("/status")
@@ -22,7 +23,17 @@ class VarselStatusController(
 
         val gyldigToken = tokenValidator.sjekkGyldigToken(token, brukerType)
 
+
+        /*
+            hvis veileder
+            - dekrypter pid fra request
+            - sjekk at "groups" i token har mist en av nødvendige grupper (basistilgang)
+            - sjekk borger er skjermet og veileder kan se på skjerma borger
+            - sjekk adressebeskyttelse på borger og om veileder har tilgang til den typen adressebeskyttelse
+            *
+        * */
         if (brukerType == Bruker.Veileder) {
+            val pid = pidEncryptionClient.decrypt(requestBody?.pid ?: "", token)
 
         }
 
@@ -37,13 +48,7 @@ hvis borger
     hvis ikke cookie
         Hvis innlogget bruker har adressebeskyttelse (STRENGT_FORTROLIG eller STRENGT_FORTROLIG_UTLAND). Må logge inn med høyt innloggingsnivå (feks Bank ID)
 
-hvis veileder
-    dekrypter pid fra request
-    sjekk at "groups" i token har mist en av nødvendige grupper (basistilgang)
-    sjekk borger er skjermet og veileder kan se på skjerma borger
-    sjekk adressebeskyttelse på borger og om veileder har tilgang til den typen adressebeskyttelse
-        *
-        * */
+*/
 
         val fnr = when (brukerType) {
             Bruker.Borger -> gyldigToken.pid

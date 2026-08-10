@@ -43,12 +43,15 @@ class TexasService(
         return response
     }
 
-    fun hentToken(token: String, target: String, brukerType: Bruker): String {
+    fun hentToken(token: String, target: String): String {
+        val brukerType = hentBrukertype(token)
+        val identityProvider = hentIdentityProvider(brukerType)
+
         val response = runCatching {
             restClient.post()
                 .uri(exchangeEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(ExchangeRequest(token, target,hentIdentityProvider(brukerType)))
+                .body(ExchangeRequest(token, target,identityProvider))
                 .retrieve()
                 .body<ExchangeResponse>()
         }.getOrNull()
