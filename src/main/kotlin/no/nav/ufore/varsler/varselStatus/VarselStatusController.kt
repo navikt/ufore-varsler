@@ -16,7 +16,8 @@ class VarselStatusController(
     private val varselStatusService: VarselStatusService,
     private val tokenValidator: TexasService,
     private val pidEncryptionClient: PidEncryptionClient,
-    private val azureAdGrupperService: AzureAdGrupperService
+    private val azureAdGrupperService: AzureAdGrupperService,
+    private val skjermingClient: SkjermingClient,
 ) {
 
     private val logger = LoggerFactory.getLogger(VarselStatusController::class.java)
@@ -37,9 +38,15 @@ class VarselStatusController(
         */
         if (brukerType == Bruker.Veileder) {
             if (requestBody?.pid == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-            val pid = pidEncryptionClient.decrypt(requestBody.pid, token)
+            val pid = pidEncryptionClient.decrypt(requestBody.pid, token) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
-            azureAdGrupperService.sjekkVeilederGrupper(token)
+            azureAdGrupperService.sjekkVeilederBasisTilganger(token)
+
+            if (!azureAdGrupperService.harVeilederTilgangTilSkjermedeBorgere(token)) {
+                skjermingClient.erBorgerSkjermet(token, pid) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+            }
+
+
         }
 
         /*

@@ -16,7 +16,7 @@ class PidEncryptionClient(
     private val restClient = RestClient.create()
 
     fun decrypt(encryptedPid: String, token: String): String? =
-        texasService.hentToken(token, target,  ).let { token ->
+        texasService.hentToken(token, target).let { token ->
             restClient
                 .post()
                 .uri("$baseUrl/api/decrypt")

@@ -17,7 +17,7 @@ class AzureAdGrupperService(
     @Value("\${ad-grupper.veileder}") private val veilederGroupId: String,
 ) {
 
-    fun sjekkVeilederGrupper(token: String) {
+    fun sjekkVeilederBasisTilganger(token: String) {
         val grupper = hentGrupper(token)
         val harMinstEnGyldigGruppe =
             grupper.any { it in listOf(saksbehandlerGroupId, veilederGroupId, brukerhjelpaGroupId, okonomiGroupId) }
@@ -25,6 +25,11 @@ class AzureAdGrupperService(
         if (!harMinstEnGyldigGruppe) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN)
         }
+    }
+
+    fun harVeilederTilgangTilSkjermedeBorgere(token: String): Boolean {
+        val grupper = hentGrupper(token)
+        return grupper.contains(skjermetGroupId)
     }
 
     private fun hentGrupper(token: String): List<String> =

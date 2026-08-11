@@ -51,6 +51,9 @@ app:
   pid-encryption:
     url: http://pensjon-pid-encryption.pensjon-person
     target: prod-gcp.pensjon-person.pensjon-pid-encryption
+  skjerming:
+    url: https://skjermede-personer-pip.intern.nav.no
+    target: prod-gcp.nom.skjermede-personer-pip
 
 ad-grupper:
   skjermet: e750ceb5-b70b-4d94-b4fa-9d22467b786b
