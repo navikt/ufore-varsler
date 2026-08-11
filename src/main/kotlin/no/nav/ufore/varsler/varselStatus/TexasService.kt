@@ -51,7 +51,7 @@ class TexasService(
             restClient.post()
                 .uri(exchangeEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(ExchangeRequest(token, target,identityProvider))
+                .body(ExchangeRequest(token, target, identityProvider))
                 .retrieve()
                 .body<ExchangeResponse>()
         }.getOrNull()

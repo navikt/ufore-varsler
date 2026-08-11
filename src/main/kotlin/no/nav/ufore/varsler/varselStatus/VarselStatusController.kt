@@ -1,5 +1,6 @@
 package no.nav.ufore.varsler.varselStatus
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/varsler")
@@ -16,12 +18,13 @@ class VarselStatusController(
     private val pidEncryptionClient: PidEncryptionClient,
 ) {
 
+    private val logger = LoggerFactory.getLogger(VarselStatusController::class.java)
+
     @PostMapping("/status")
     fun hentStatus(@RequestHeader("Authorization", required = false) authHeader: String?, @RequestBody requestBody: VarselStatusRequest?): ResponseEntity<VarselStatusResponse> {
         val token = authHeader?.removePrefix("Bearer ") ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val brukerType = tokenValidator.hentBrukertype(token)
-
-        val gyldigToken = tokenValidator.sjekkGyldigToken(token, brukerType)
+        val gyldigToken = tokenValidator.sjekkGyldigToken(token)
 
 
         /*
@@ -30,13 +33,11 @@ class VarselStatusController(
             - sjekk at "groups" i token har mist en av nødvendige grupper (basistilgang)
             - sjekk borger er skjermet og veileder kan se på skjerma borger
             - sjekk adressebeskyttelse på borger og om veileder har tilgang til den typen adressebeskyttelse
-            *
-        * */
+        */
         if (brukerType == Bruker.Veileder) {
-            val pid = pidEncryptionClient.decrypt(requestBody?.pid ?: "", token)
-
+            if (requestBody?.pid == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+            val pid = pidEncryptionClient.decrypt(requestBody.pid, token)
         }
-
 
         /*
         * ufore-varsler

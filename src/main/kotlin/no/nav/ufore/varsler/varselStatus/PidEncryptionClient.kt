@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 
 @Component
 class PidEncryptionClient(
@@ -20,11 +21,9 @@ class PidEncryptionClient(
                 .post()
                 .uri("$baseUrl/api/decrypt")
                 .header("Authorization", "Bearer $token")
-//                .header(NAV_CALL_ID_HEADER, getCurrentCallId()) Skal vi implementere kall id og MDC?
                 .accept(MediaType.APPLICATION_JSON)
                 .body(encryptedPid)
                 .retrieve()
-                .body<String>(String::class.java)
-//                .withMdcContext()
+                .body<String>()
         }
 }
