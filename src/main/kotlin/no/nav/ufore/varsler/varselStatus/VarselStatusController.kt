@@ -16,6 +16,7 @@ class VarselStatusController(
     private val varselStatusService: VarselStatusService,
     private val tokenValidator: TexasService,
     private val pidEncryptionClient: PidEncryptionClient,
+    private val azureAdGrupperService: AzureAdGrupperService
 ) {
 
     private val logger = LoggerFactory.getLogger(VarselStatusController::class.java)
@@ -37,6 +38,8 @@ class VarselStatusController(
         if (brukerType == Bruker.Veileder) {
             if (requestBody?.pid == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
             val pid = pidEncryptionClient.decrypt(requestBody.pid, token)
+
+            azureAdGrupperService.sjekkVeilederGrupper(token)
         }
 
         /*

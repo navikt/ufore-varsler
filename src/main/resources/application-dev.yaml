@@ -2,3 +2,12 @@ app:
   dine-muligheter-url: https://uforetrygd-selvbetjening-frontend-borger.intern.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter
   pid-encryption:
     target: dev-gcp.pensjon-person.pensjon-pid-encryption
+
+ad-grupper:
+  skjermet: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
+  fortrolig: 2e1dc582-f762-4510-a660-88bf68fb7128
+  strengt-fortrolig: a1b518e2-3947-478d-8929-e5d685c47cac
+  brukerhjelpa: 9e122ddd-e542-4cc1-a7eb-92c99140fe0e
+  okonomi: 05ae245b-7b47-428a-9074-4ff6b59eddbc
+  saksbehandler: 8bb9b8d1-f46a-4ade-8ee8-5895eccdf8cf
+  veileder: a3f91493-1ab8-4b64-a544-0a77cbba9240
