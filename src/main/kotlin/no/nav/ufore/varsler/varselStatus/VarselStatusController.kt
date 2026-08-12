@@ -1,5 +1,6 @@
 package no.nav.ufore.varsler.varselStatus
 
+import no.nav.ufore.varsler.varselStatus.pdl.PdlClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,7 @@ class VarselStatusController(
     private val pidEncryptionClient: PidEncryptionClient,
     private val azureAdGrupperService: AzureAdGrupperService,
     private val skjermingClient: SkjermingClient,
+    private val pdlClient: PdlClient,
 ) {
 
     private val logger = LoggerFactory.getLogger(VarselStatusController::class.java)
@@ -46,7 +48,7 @@ class VarselStatusController(
                 skjermingClient.erBorgerSkjermet(token, pid) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
             }
 
-
+            pdlClient.sjekkAdressebeskyttelse(pid, token)
         }
 
         /*

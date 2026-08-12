@@ -8,8 +8,8 @@ import org.springframework.web.client.body
 
 @Component
 class SkjermingClient(
-    @Value("\${skjerming.endpoint.url}") private val url: String,
-    @Value("\${skjerming.target}") private val target: String,
+    @Value("\${app.skjerming.url}") private val url: String,
+    @Value("\${app.skjerming.target}") private val target: String,
     private val texasService: TexasService
 ) {
 

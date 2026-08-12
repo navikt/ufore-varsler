@@ -54,11 +54,12 @@ app:
   skjerming:
     url: https://skjermede-personer-pip.intern.nav.no
     target: prod-gcp.nom.skjermede-personer-pip
+  pdl:
+    url: https://pdl-api.prod-fss-pub.nais.io/graphql
+    target: prod-fss.pdl.pdl-api
 
 ad-grupper:
   skjermet: e750ceb5-b70b-4d94-b4fa-9d22467b786b
-  fortrolig: e98efc34-12d1-401f-b059-f17e62834065
-  strengt-fortrolig: 2931da41-8b8e-42cd-99c0-04a169ddae40
   brukerhjelpa: 7845a796-1516-4d14-b500-fd65c001f35c
   okonomi: 70ef8e7f-7456-4298-95e0-b13c0ef2422b
   saksbehandler: 0af3955f-df85-4eb0-b5b2-45bf2c8aeb9e

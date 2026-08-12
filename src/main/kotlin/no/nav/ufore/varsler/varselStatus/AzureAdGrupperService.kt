@@ -9,8 +9,6 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class AzureAdGrupperService(
     @Value("\${ad-grupper.skjermet}") private val skjermetGroupId: String,
-    @Value("\${ad-grupper.fortrolig}") private val fortroligGroupId: String,
-    @Value("\${ad-grupper.strengt-fortrolig}") private val strengtFortroligGroupId: String,
     @Value("\${ad-grupper.brukerhjelpa}") private val brukerhjelpaGroupId: String,
     @Value("\${ad-grupper.okonomi}") private val okonomiGroupId: String,
     @Value("\${ad-grupper.saksbehandler}") private val saksbehandlerGroupId: String,
