@@ -15,14 +15,14 @@ class SkjermingClient(
 
     private val restClient = RestClient.create()
 
-    fun erBorgerSkjermet(token: String, pid: String): Boolean? {
+    fun erBorgerSkjermet(token: String, fnr: String): Boolean? {
         return texasService.hentToken(token, target).let { accessToken ->
             restClient
                 .post()
                 .uri("$url/skjermet")
                 .header("Authorization", "Bearer $accessToken")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(SkjermingRequest(pid))
+                .body(SkjermingRequest(fnr))
                 .retrieve()
                 .body<Boolean>()
         }

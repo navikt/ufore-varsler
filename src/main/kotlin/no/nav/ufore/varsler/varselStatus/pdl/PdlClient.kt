@@ -26,8 +26,8 @@ class PdlClient(
     private val logger = LoggerFactory.getLogger(PdlClient::class.java)
     private val restClient = RestClient.create()
 
-    fun sjekkAdressebeskyttelse(pid: String, token: String) {
-        val query = PdlQueryBuilder.getAdressebeskyttelseQuery(pid)
+    fun sjekkAdressebeskyttelse(fnr: String, token: String) {
+        val query = PdlQueryBuilder.getAdressebeskyttelseQuery(fnr)
         val response = texasService.hentToken(token, target).let {
             restClient
                 .post()
