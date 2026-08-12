@@ -16,14 +16,28 @@ class VarselStatusService(
 ) {
 
 
-    fun hentStatus(token: String, fnr: String?): Boolean {
+    fun hentStatus(token: String, fnr: String?, kryptertRepresentertFnr: String?): Boolean {
         val brukerType = texasService.hentBrukertype(token)
         val gyldigToken = texasService.sjekkGyldigToken(token)
 
         val fnr = when (brukerType) {
             Bruker.Borger -> {
-                tilgangService.sjekkBorgerTilgang(token)
-                gyldigToken.pid ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+                val innloggaBorgerFnr = gyldigToken.pid ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+
+                if (kryptertRepresentertFnr != null) {
+                    tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, kryptertRepresentertFnr)
+
+                }
+
+                // Representant
+                // sjekke om kryptret fnr -> dekrypter fnr -> tilgangService.sjekkRepresentasjonTilgang
+
+
+
+
+                // TODO, håndtere fnr for representert borger, hvis representasjon finnes, vanlig gyldig token hvis ikke
+
+                innloggaBorgerFnr
             }
             Bruker.Veileder -> {
                 if (fnr == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
