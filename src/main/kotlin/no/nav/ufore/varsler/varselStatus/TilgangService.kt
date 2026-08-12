@@ -13,28 +13,18 @@ class TilgangService (
     private val representasjonClient: RepresentasjonClient,
 ){
 
-    //    hvis borger
-    //      hvis nav-obo-cookie
-    //          sjekk hasValidRepresentasjonsforhold
-    //          sjekk adressebeskyttelse
-    //      hvis ikke cookie
-    //          Hvis innlogget bruker har adressebeskyttelse (STRENGT_FORTROLIG eller STRENGT_FORTROLIG_UTLAND). Må logge inn med høyt innloggingsnivå (feks Bank ID)
-    fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String) {
-
-        // token fnr = innlogga borger aka representant
-        // cookie fnr = representert borger aka representert
-        val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, kryptertRepresentertFnr)
-
-
-
+    fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, representertFnr: String) {
+        val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, representertFnr)
         if (representasjonsforhold == null || !representasjonsforhold.hasValidRepresentasjonsforhold) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN)
         }
 
+        pdlClient.sjekkAdressebeskyttelse(representertFnr, token)
     }
 
-    fun sjekkBorgerTilgang() {
-
+    // TODO: Test med kode 6 bruker i miljø
+    fun sjekkBorgerTilgang(innloggaBorgerFnr: String, token: String) {
+        pdlClient.sjekkAdressebeskyttelse(innloggaBorgerFnr, token)
     }
 
     fun sjekkVeilederTilgang(token: String, fnr: String) {

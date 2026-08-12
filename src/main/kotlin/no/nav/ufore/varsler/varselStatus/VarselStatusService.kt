@@ -15,7 +15,6 @@ class VarselStatusService(
     private val tilgangService: TilgangService,
 ) {
 
-
     fun hentStatus(token: String, fnr: String?, kryptertRepresentertFnr: String?): Boolean {
         val brukerType = texasService.hentBrukertype(token)
         val gyldigToken = texasService.sjekkGyldigToken(token)
@@ -25,23 +24,18 @@ class VarselStatusService(
                 val innloggaBorgerFnr = gyldigToken.pid ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
                 if (kryptertRepresentertFnr != null) {
-                    tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, kryptertRepresentertFnr)
-
+                    val representertFnr = pidEncryptionClient.decrypt(kryptertRepresentertFnr, token) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+                    tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, representertFnr)
+                    representertFnr
+                } else {
+                    tilgangService.sjekkBorgerTilgang(innloggaBorgerFnr, token)
+                    innloggaBorgerFnr
                 }
-
-                // Representant
-                // sjekke om kryptret fnr -> dekrypter fnr -> tilgangService.sjekkRepresentasjonTilgang
-
-
-
-
-                // TODO, håndtere fnr for representert borger, hvis representasjon finnes, vanlig gyldig token hvis ikke
-
-                innloggaBorgerFnr
             }
+
             Bruker.Veileder -> {
                 if (fnr == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-                val dekryptertFnr = pidEncryptionClient.decrypt(fnr, token) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+                val dekryptertFnr = pidEncryptionClient.decrypt(fnr, token) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
                 tilgangService.sjekkVeilederTilgang(token, dekryptertFnr)
                 dekryptertFnr
             }
