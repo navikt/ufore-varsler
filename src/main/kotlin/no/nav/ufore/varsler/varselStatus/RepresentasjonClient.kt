@@ -1,7 +1,6 @@
 package no.nav.ufore.varsler.varselStatus
 
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient

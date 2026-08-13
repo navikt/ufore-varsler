@@ -76,8 +76,12 @@ spec:
       rules:
         - application: pensjon-pid-encryption
           namespace: pensjon-person
+        - application: skjermede-personer-pip
+          namespace: nom
       external:
         - host: ufore-unleash-api.nav.cloud.nais.io
+        - host: pensjon-representasjon-q2.dev-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
   envFrom:
     - secret: ufore-varsler-unleash-api-token
   env:
