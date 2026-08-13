@@ -26,10 +26,10 @@ class VarselStatusController(
     ): ResponseEntity<VarselStatusResponse> {
         val token = authHeader?.removePrefix("Bearer ") ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-        return ResponseEntity.ok(VarselStatusResponse(varselStatusService.hentStatus(token, requestBody?.pid, kryptertRepresentertFnr)))
+        return ResponseEntity.ok(VarselStatusResponse(varselStatusService.hentStatus(token, requestBody?.fnr, kryptertRepresentertFnr)))
     }
 }
 
 data class VarselStatusResponse(val harMottattVarsel: Boolean)
 
-data class VarselStatusRequest(val pid: String)
+data class VarselStatusRequest(val fnr: String)
