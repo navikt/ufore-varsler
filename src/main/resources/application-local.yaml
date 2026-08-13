@@ -11,3 +11,7 @@ spring:
 app:
   texas:
     token-introspection-endpoint: http://localhost:0/not-in-use
+    token-exchange-endpoint: http://localhost:0/not-in-use
+  representasjon:
+    url: http://localhost:0/not-in-use
+    target: not-in-use

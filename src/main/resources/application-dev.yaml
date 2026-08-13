@@ -1,2 +1,21 @@
 app:
   dine-muligheter-url: https://uforetrygd-selvbetjening-frontend-borger.intern.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter
+  pid-encryption:
+    url: http://pensjon-pid-encryption.pensjon-person
+    target: dev-gcp.pensjon-person.pensjon-pid-encryption
+  skjerming:
+    url: http://skjermede-personer-pip.nom
+    target: dev-gcp.nom.skjermede-personer-pip
+  pdl:
+    url: https://pdl-api.dev-fss-pub.nais.io/graphql
+    target: dev-fss.pdl.pdl-api
+  representasjon:
+    url: https://pensjon-representasjon-q2.dev-fss-pub.nais.io
+    target: dev-fss.pensjon-person.pensjon-representasjon-q2
+
+ad-grupper:
+  skjermet: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
+  brukerhjelpa: 9e122ddd-e542-4cc1-a7eb-92c99140fe0e
+  okonomi: 05ae245b-7b47-428a-9074-4ff6b59eddbc
+  saksbehandler: 8bb9b8d1-f46a-4ade-8ee8-5895eccdf8cf
+  veileder: a3f91493-1ab8-4b64-a544-0a77cbba9240

@@ -51,14 +51,33 @@ spec:
     path: actuator/prometheus
   tokenx:
     enabled: true
+  azure:
+    application:
+      enabled: true
+      claims:
+        groups:
+          - id: "0af3955f-df85-4eb0-b5b2-45bf2c8aeb9e" #SAKSBEHANDLER
+          - id: "7845a796-1516-4d14-b500-fd65c001f35c" #BRUKERHJELPA
+          - id: "959ead5b-99b5-466b-a0ff-5fdbc687517b" #VEILEDER
+          - id: "70ef8e7f-7456-4298-95e0-b13c0ef2422b" #OKONOMI
+          - id: "2931da41-8b8e-42cd-99c0-04a169ddae40" #STRENGT_FORTROLIG
+          - id: "e98efc34-12d1-401f-b059-f17e62834065" #FORTROLIG
+          - id: "e750ceb5-b70b-4d94-b4fa-9d22467b786b" #EGENANSATT
   accessPolicy:
     inbound:
       rules:
         - application: din-uforetrygd-backend
           cluster: prod-gcp
     outbound:
+      rules:
+        - application: pensjon-pid-encryption
+          namespace: pensjon-person
+        - application: skjermede-personer-pip
+          namespace: nom
       external:
         - host: ufore-unleash-api.nav.cloud.nais.io
+        - host: pensjon-representasjon.prod-fss-pub.nais.io
+        - host: pdl-api.prod-fss-pub.nais.io
   envFrom:
     - secret: ufore-varsler-unleash-api-token
   env:
