@@ -41,8 +41,7 @@ class VarselStatusService(
             }
         }
 
-
-        return varselRepository.hent(fnr, VarselType.UNGE_MED_UFORE)?.status != Status.OPPRETTET
+        val varsel = varselRepository.hent(fnr, VarselType.UNGE_MED_UFORE) ?: return false
+        return varsel.status != Status.OPPRETTET
     }
-
 }
