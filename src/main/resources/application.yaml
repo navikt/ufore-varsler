@@ -51,16 +51,16 @@ app:
     address: ${PUSH_GATEWAY_ADDRESS:prometheus-pushgateway.nais-system:9091}
   pid-encryption:
     url: http://pensjon-pid-encryption.pensjon-person
-    target: prod-gcp.pensjon-person.pensjon-pid-encryption
+    target: prod-gcp:pensjon-person:pensjon-pid-encryption
   skjerming:
     url: http://skjermede-personer-pip.nom
-    target: prod-gcp.nom.skjermede-personer-pip
+    target: prod-gcp:nom:skjermede-personer-pip
   pdl:
     url: https://pdl-api.prod-fss-pub.nais.io/graphql
-    target: prod-fss.pdl.pdl-api
+    target: prod-fss:pdl:pdl-api
   representasjon:
     url: https://pensjon-representasjon.prod-fss-pub.nais.io
-    target: prod-fss.pensjon-person.pensjon-representasjon
+    target: prod-fss:pensjon-person:pensjon-representasjon
 
 ad-grupper:
   skjermet: e750ceb5-b70b-4d94-b4fa-9d22467b786b
