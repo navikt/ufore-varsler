@@ -2,9 +2,11 @@ package no.nav.ufore.varsler.varselStatus
 
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
-import org.springframework.web.client.body
+import org.springframework.web.client.requiredBody
+import org.springframework.web.server.ResponseStatusException
 
 @Component
 class RepresentasjonClient(
@@ -14,7 +16,7 @@ class RepresentasjonClient(
 ) {
     private val restClient = RestClient.create()
 
-    fun hentRepresentasjon(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): RepresentasjonResponse? {
+    fun hentRepresentasjon(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): RepresentasjonResponse {
         val accessToken = texasService.hentToken(token, scope)
         return restClient
             .post()
@@ -25,7 +27,8 @@ class RepresentasjonClient(
                 kryptertRepresentertFnr,
                 representasjonstyper))
             .retrieve()
-            .body<RepresentasjonResponse>()
+            .onStatus({ it == HttpStatus.FORBIDDEN}) { _, _ -> throw ResponseStatusException(HttpStatus.FORBIDDEN) }
+            .requiredBody<RepresentasjonResponse>()
     }
 }
 

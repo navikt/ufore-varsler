@@ -15,9 +15,8 @@ class TilgangService (
 
     fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, representertFnr: String) {
         val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, representertFnr)
-        if (representasjonsforhold == null || !representasjonsforhold.hasValidRepresentasjonsforhold) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        }
+
+        if (!representasjonsforhold.hasValidRepresentasjonsforhold) throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
         pdlClient.sjekkAdressebeskyttelse(representertFnr, token)
     }
@@ -32,7 +31,7 @@ class TilgangService (
 
         if (!azureAdGrupperService.harVeilederTilgangTilSkjermedeBorgere(token)) {
             val erBorgerSjermet = skjermingClient.erBorgerSkjermet(token, fnr)
-            if (erBorgerSjermet == null || erBorgerSjermet) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+            if (erBorgerSjermet) throw ResponseStatusException(HttpStatus.FORBIDDEN)
         }
 
         pdlClient.sjekkAdressebeskyttelse(fnr, token)

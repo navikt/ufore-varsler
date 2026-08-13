@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
-import org.springframework.web.client.body
+import org.springframework.web.client.requiredBody
 import org.springframework.web.server.ResponseStatusException
 
 @Component
@@ -37,15 +37,15 @@ class PdlClient(
                 .accept(MediaType.APPLICATION_JSON)
                 .body(query)
                 .retrieve()
-                .body<PdlResponse>()
+                .requiredBody<PdlResponse>()
         }
 
-        val beskyttelse = response?.data?.hentPerson?.adressebeskyttelse
+        val beskyttelse = response.data.hentPerson?.adressebeskyttelse
         if (beskyttelse != null) {
             return
 
         } else {
-            val error = response?.errors?.firstOrNull() ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+            val error = response.errors?.firstOrNull() ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
             logger.warn("Feil ved henting av adressebeskyttelse fra PDL, code: ${error.extensions.code}, error: ${error.message}")
 
             when (error.extensions.code) {

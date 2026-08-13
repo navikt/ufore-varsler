@@ -58,7 +58,7 @@ class TexasService(
 
         if (response == null) {
             logger.warn("Klarte ikke exchange token")
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
         return response.access_token
