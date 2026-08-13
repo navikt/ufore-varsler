@@ -11,12 +11,12 @@ class PidEncryptionClient(
     @Value("\${app.pid-encryption.target}") private val target: String,
     @Value("\${app.pid-encryption.url}") private val baseUrl: String,
 
-    private val texasService: TexasService,
+    private val tokenService: TokenService,
 ) {
     private val restClient = RestClient.create()
 
-    fun decrypt(encryptedPid: String, token: String): String =
-        texasService.hentToken(token, target).let { token ->
+    fun decrypt(encryptedPid: String): String =
+        tokenService.hentM2mToken(target).let { token ->
             restClient
                 .post()
                 .uri("$baseUrl/api/decrypt")

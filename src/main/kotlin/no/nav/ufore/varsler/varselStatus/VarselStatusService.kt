@@ -10,21 +10,21 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class VarselStatusService(
     private val varselRepository: VarselRepository,
-    private val texasService: TexasService,
+    private val tokenService: TokenService,
     private val pidEncryptionClient: PidEncryptionClient,
     private val tilgangService: TilgangService,
 ) {
 
     fun hentStatus(token: String, fnr: String?, kryptertRepresentertFnr: String?): Boolean {
-        val brukerType = texasService.hentBrukertype(token)
-        val gyldigToken = texasService.sjekkGyldigToken(token)
+        val brukerType = tokenService.hentBrukertype(token)
+        val gyldigToken = tokenService.sjekkGyldigToken(token)
 
         val fnr = when (brukerType) {
             Bruker.Borger -> {
                 val innloggaBorgerFnr = gyldigToken.pid ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
                 if (kryptertRepresentertFnr != null) {
-                    val representertFnr = pidEncryptionClient.decrypt(kryptertRepresentertFnr, token)
+                    val representertFnr = pidEncryptionClient.decrypt(kryptertRepresentertFnr)
                     tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, representertFnr)
                     representertFnr
                 } else {
@@ -35,7 +35,7 @@ class VarselStatusService(
 
             Bruker.Veileder -> {
                 if (fnr == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-                val dekryptertFnr = pidEncryptionClient.decrypt(fnr, token)
+                val dekryptertFnr = pidEncryptionClient.decrypt(fnr)
                 tilgangService.sjekkVeilederTilgang(token, dekryptertFnr)
                 dekryptertFnr
             }

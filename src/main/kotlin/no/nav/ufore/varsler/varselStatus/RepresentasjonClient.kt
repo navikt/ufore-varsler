@@ -12,12 +12,12 @@ import org.springframework.web.server.ResponseStatusException
 class RepresentasjonClient(
     @Value("\${app.representasjon.url}") private val url: String,
     @Value("\${app.representasjon.target}") private val scope: String,
-    private val texasService: TexasService
+    private val tokenService: TokenService
 ) {
     private val restClient = RestClient.create()
 
     fun hentRepresentasjon(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): RepresentasjonResponse {
-        val accessToken = texasService.hentToken(token, scope)
+        val accessToken = tokenService.hentToken(token, scope)
         return restClient
             .post()
             .uri("$url/representasjon/hasValidRepresentasjonsforhold")

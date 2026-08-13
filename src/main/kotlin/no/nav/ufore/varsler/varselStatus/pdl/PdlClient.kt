@@ -1,7 +1,7 @@
 package no.nav.ufore.varsler.varselStatus.pdl
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.ufore.varsler.varselStatus.TexasService
+import no.nav.ufore.varsler.varselStatus.TokenService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException
 class PdlClient(
     @Value("\${app.pdl.url}") private val url: String,
     @Value("\${app.pdl.target}") private val target: String,
-    private val texasService: TexasService
+    private val tokenService: TokenService
 ) {
 
     companion object {
@@ -28,7 +28,7 @@ class PdlClient(
 
     fun sjekkAdressebeskyttelse(fnr: String, token: String) {
         val query = PdlQueryBuilder.getAdressebeskyttelseQuery(fnr)
-        val response = texasService.hentToken(token, target).let {
+        val response = tokenService.hentToken(token, target).let {
             restClient
                 .post()
                 .uri(url)

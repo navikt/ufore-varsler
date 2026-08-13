@@ -12,13 +12,13 @@ import org.springframework.web.server.ResponseStatusException
 class SkjermingClient(
     @Value("\${app.skjerming.url}") private val url: String,
     @Value("\${app.skjerming.target}") private val target: String,
-    private val texasService: TexasService
+    private val tokenService: TokenService
 ) {
 
     private val restClient = RestClient.create()
 
     fun erBorgerSkjermet(token: String, fnr: String): Boolean {
-        return texasService.hentToken(token, target).let { accessToken ->
+        return tokenService.hentToken(token, target).let { accessToken ->
             restClient
                 .post()
                 .uri("$url/skjermet")

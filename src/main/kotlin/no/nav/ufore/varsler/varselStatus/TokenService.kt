@@ -12,14 +12,16 @@ import org.springframework.web.server.ResponseStatusException
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
 @Component
-class TexasService(
-    @Value("\${app.texas.token-introspection-endpoint}")
+class TokenService(
+    @Value("\${app.token.introspection-endpoint}")
     private val introspectionEndpoint: String,
-    @Value("\${app.texas.token-exchange-endpoint}")
+    @Value("\${app.token.exchange-endpoint}")
     private val exchangeEndpoint: String,
+    @Value("\${app.token.m2m-endpoint}")
+    private val m2mTokenEndpoint: String,
 ) {
 
-    private val logger = LoggerFactory.getLogger(TexasService::class.java)
+    private val logger = LoggerFactory.getLogger(TokenService::class.java)
     private val restClient = RestClient.create()
 
     fun sjekkGyldigToken(token: String): IntrospectionResponse {
@@ -53,13 +55,25 @@ class TexasService(
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ExchangeRequest(token, target, identityProvider))
                 .retrieve()
-                .body<ExchangeResponse>()
+                .body<TokenResponse>()
         }.getOrNull()
 
-        if (response == null) {
-            logger.warn("Klarte ikke exchange token")
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        if (response == null) throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+
+        return response.access_token
+    }
+
+    fun hentM2mToken(target: String): String {
+        val response = runCatching {
+            restClient.post()
+                .uri(m2mTokenEndpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(M2mRequest(target, "entra_id"))
+                .retrieve()
+                .body<TokenResponse>()
+        }.getOrNull()
+
+        if (response == null) throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
 
         return response.access_token
     }
@@ -83,8 +97,6 @@ class TexasService(
         }
     }
 
-
-
     private data class IntrospectionRequest(
         val identity_provider: String,
         val token: String,
@@ -102,13 +114,16 @@ class TexasService(
         val identity_provider: String,
     )
 
-    private data class ExchangeResponse(
+    private data class M2mRequest(
+        val target: String,
+        val identity_provider: String,
+    )
+
+    private data class TokenResponse(
         val access_token: String,
         val expires_in: Int,
         val token_type: String,
     )
-
-
 }
 
 enum class Bruker { Veileder, Borger }
