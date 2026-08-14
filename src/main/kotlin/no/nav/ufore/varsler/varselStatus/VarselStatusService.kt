@@ -24,9 +24,8 @@ class VarselStatusService(
                 val innloggaBorgerFnr = gyldigToken.pid ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
                 if (kryptertRepresentertFnr != null) {
-                    val representertFnr = pidEncryptionClient.decrypt(kryptertRepresentertFnr)
-                    tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, representertFnr)
-                    representertFnr
+                    val dekryptertRepresentertFnr = tilgangService.sjekkRepresentantTilgang(token, innloggaBorgerFnr, kryptertRepresentertFnr)
+                    dekryptertRepresentertFnr
                 } else {
                     tilgangService.sjekkBorgerTilgang(innloggaBorgerFnr, token)
                     innloggaBorgerFnr

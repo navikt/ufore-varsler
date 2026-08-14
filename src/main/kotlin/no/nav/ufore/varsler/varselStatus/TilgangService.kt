@@ -13,12 +13,15 @@ class TilgangService (
     private val representasjonClient: RepresentasjonClient,
 ){
 
-    fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, representertFnr: String) {
-        val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, representertFnr)
+    // skal nå returnere ukryptert fnr
+    fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): String {
+        val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, kryptertRepresentertFnr)
 
         if (!representasjonsforhold.hasValidRepresentasjonsforhold) throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
-        pdlClient.sjekkAdressebeskyttelse(representertFnr, token)
+        pdlClient.sjekkAdressebeskyttelse(representasjonsforhold.representertPid, token)
+
+        return representasjonsforhold.representertPid
     }
 
     // TODO: Test med kode 6 bruker i miljø

@@ -34,13 +34,15 @@ class RepresentasjonClient(
 
 data class RepresentasjonResponse (
     val hasValidRepresentasjonsforhold: Boolean,
+    val representertPid: String
+
 )
 
 data class RepresenttasjonRequest(
     val representertPid: String,
     val representantPid: String?,
     val validRepresentasjonstyper: List<String>,
-    val includeRepresentertNavn: Boolean = false
+    val includeRepresentertNavn: Boolean = false,
 )
 
 private val representasjonstyper = listOf(
