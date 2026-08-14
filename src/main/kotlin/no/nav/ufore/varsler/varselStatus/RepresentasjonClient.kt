@@ -23,8 +23,8 @@ class RepresentasjonClient(
             .uri("$url/representasjon/hasValidRepresentasjonsforhold")
             .header("Authorization", "Bearer $accessToken")
             .body(RepresenttasjonRequest(
-                innloggaBorgerFnr,
                 kryptertRepresentertFnr,
+                innloggaBorgerFnr,
                 representasjonstyper))
             .retrieve()
             .onStatus({ it == HttpStatus.FORBIDDEN}) { _, _ -> throw ResponseStatusException(HttpStatus.FORBIDDEN) }
