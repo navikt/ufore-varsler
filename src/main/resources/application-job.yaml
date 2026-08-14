@@ -18,5 +18,7 @@ spring:
         cloudSqlInstance: ufore-dev-dfc9:europe-north1:ufore-varsler
 
 app:
-  texas:
-    token-introspection-endpoint: http://localhost:0/not-in-use
+  token:
+    introspection-endpoint: http://localhost:0/not-in-use
+    exchange-endpoint: http://localhost:0/not-in-use
+    m2m-endpoint: http://localhost:0/not-in-use
