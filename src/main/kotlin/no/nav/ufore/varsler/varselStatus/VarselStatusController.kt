@@ -41,8 +41,4 @@ data class VarselStatusResponse(val harMottattVarsel: Boolean)
 
 data class VarselStatusRequest(val fnr: String)
 
-class IkkeTilgangException(
-    val service: String,
-    val melding: String,
-) : RuntimeException("Ikke tilgang til $service. Melding: $melding")
-
+class IkkeTilgangException(service: String, melding: String) : RuntimeException("Ikke tilgang. Service: $service. Melding: $melding")
