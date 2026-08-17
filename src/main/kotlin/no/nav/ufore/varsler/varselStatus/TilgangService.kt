@@ -13,18 +13,16 @@ class TilgangService (
     private val representasjonClient: RepresentasjonClient,
 ){
 
-    // skal nå returnere ukryptert fnr
     fun sjekkRepresentantTilgang(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): String {
         val representasjonsforhold = representasjonClient.hentRepresentasjon(token, innloggaBorgerFnr, kryptertRepresentertFnr)
 
-        if (!representasjonsforhold.hasValidRepresentasjonsforhold) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        if (!representasjonsforhold.hasValidRepresentasjonsforhold) throw IkkeTilgangException("tilgangservice", "Har ikke gyldig representasjonsforhold")
 
         pdlClient.sjekkAdressebeskyttelse(representasjonsforhold.representertPid, token)
 
         return representasjonsforhold.representertPid
     }
 
-    // TODO: Test med kode 6 bruker i miljø
     fun sjekkBorgerTilgang(innloggaBorgerFnr: String, token: String) {
         pdlClient.sjekkAdressebeskyttelse(innloggaBorgerFnr, token)
     }
@@ -34,7 +32,7 @@ class TilgangService (
 
         if (!azureAdGrupperService.harVeilederTilgangTilSkjermedeBorgere(token)) {
             val erBorgerSjermet = skjermingClient.erBorgerSkjermet(token, fnr)
-            if (erBorgerSjermet) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+            if (erBorgerSjermet) throw IkkeTilgangException("tilgangservice", "Veileder har ikke tilgang til borger")
         }
 
         pdlClient.sjekkAdressebeskyttelse(fnr, token)

@@ -27,10 +27,6 @@ class SendVarselProducer(
 	fun sendBeskjed(request: SendVarselRequest): SendResult {
 		val ident = request.ident.trim()
 
-		if (!ident.matches(Regex("\\d{11}"))) {
-			throw ResponseStatusException(HttpStatus.BAD_REQUEST, "ident må bestå av 11 siffer")
-		}
-
 		val melding = try {
 			VarselActionBuilder.opprett {
 				this.type = Varseltype.Beskjed

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
-import org.springframework.web.client.body
+import org.springframework.web.client.requiredBody
 import org.springframework.web.server.ResponseStatusException
 
 // Dokumentasjon: https://docs.nais.io/auth/tokenx/how-to/secure/#secure-your-api-with-tokenx
@@ -28,18 +28,15 @@ class TokenService(
         val brukerType = hentBrukertype(token)
 
         val identityProvider = hentIdentityProvider(brukerType)
-        val response = runCatching {
-            restClient.post()
-                .uri(introspectionEndpoint)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(IntrospectionRequest(identityProvider, token))
-                .retrieve()
-                .body<IntrospectionResponse>()
-        }.getOrNull()
+        val response = restClient.post()
+            .uri(introspectionEndpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(IntrospectionRequest(identityProvider, token))
+            .retrieve()
+            .requiredBody<IntrospectionResponse>()
 
-        if (response == null || !response.active) {
-            logger.warn("Ugyldig token, error: ${response?.error}")
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        if (!response.active) {
+            throw IkkeTilgangException("tokenService", "Ugyldig token, error: ${response.error}")
         }
 
         return response
@@ -49,31 +46,23 @@ class TokenService(
         val brukerType = hentBrukertype(token)
         val identityProvider = hentIdentityProvider(brukerType)
 
-        val response = runCatching {
-            restClient.post()
-                .uri(exchangeEndpoint)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(ExchangeRequest(token, target, identityProvider))
-                .retrieve()
-                .body<TokenResponse>()
-        }.getOrNull()
-
-        if (response == null) throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+        val response = restClient.post()
+            .uri(exchangeEndpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ExchangeRequest(token, target, identityProvider))
+            .retrieve()
+            .requiredBody<TokenResponse>()
 
         return response.access_token
     }
 
     fun hentM2mToken(target: String): String {
-        val response = runCatching {
-            restClient.post()
-                .uri(m2mTokenEndpoint)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(M2mRequest(target, "entra_id"))
-                .retrieve()
-                .body<TokenResponse>()
-        }.getOrNull()
-
-        if (response == null) throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+        val response = restClient.post()
+            .uri(m2mTokenEndpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(M2mRequest(target, "entra_id"))
+            .retrieve()
+            .requiredBody<TokenResponse>()
 
         return response.access_token
     }
@@ -93,7 +82,7 @@ class TokenService(
         return when {
             issuer?.contains("tokenx") == true -> Bruker.Borger
             issuer?.contains("microsoftonline") == true -> Bruker.Veileder
-            else -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+            else -> throw IkkeTilgangException("tokenService", "Ukjent issuer: $issuer")
         }
     }
 

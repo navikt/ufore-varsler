@@ -21,7 +21,7 @@ class AzureAdGrupperService(
             grupper.any { it in listOf(saksbehandlerGroupId, veilederGroupId, brukerhjelpaGroupId, okonomiGroupId) }
 
         if (!harMinstEnGyldigGruppe) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN)
+            throw IkkeTilgangException("azureAdGrypperService", "Veileder har ikke nødvendige tilganger")
         }
     }
 

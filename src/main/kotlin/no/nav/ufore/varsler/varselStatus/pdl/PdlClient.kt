@@ -1,15 +1,14 @@
 package no.nav.ufore.varsler.varselStatus.pdl
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import no.nav.ufore.varsler.varselStatus.IkkeTilgangException
 import no.nav.ufore.varsler.varselStatus.TokenService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.requiredBody
-import org.springframework.web.server.ResponseStatusException
 
 @Component
 class PdlClient(
@@ -23,7 +22,6 @@ class PdlClient(
         const val PDL_BEHANDLINGSNUMMER_KEY = "Behandlingsnummer"
     }
 
-    private val logger = LoggerFactory.getLogger(PdlClient::class.java)
     private val restClient = RestClient.create()
 
     fun sjekkAdressebeskyttelse(fnr: String, token: String) {
@@ -45,12 +43,10 @@ class PdlClient(
             return
 
         } else {
-            val error = response.errors?.firstOrNull() ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
-            logger.warn("Feil ved henting av adressebeskyttelse fra PDL, code: ${error.extensions.code}, error: ${error.message}")
-
+            val error = response.errors!!.first()
             when (error.extensions.code) {
-                PdlErrorCode.UNAUTHENTICATED, PdlErrorCode.UNAUTHORIZED -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
-                else -> throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+                PdlErrorCode.UNAUTHENTICATED, PdlErrorCode.UNAUTHORIZED -> throw IkkeTilgangException("pdl", "Feil ved henting av adressebeskyttelse fra PDL, code: ${error.extensions.code}, error: ${error.message}")
+                else -> throw UkjentFeilException("Ukjent feil fra PDL, code: ${error.extensions.code}")
             }
         }
     }
@@ -96,3 +92,5 @@ private enum class PdlErrorCode {
     @JsonProperty("bad_request") BAD_REQUEST,
     @JsonProperty("server_error") SERVER_ERROR
 }
+
+class UkjentFeilException(melding: String) : RuntimeException(melding)
