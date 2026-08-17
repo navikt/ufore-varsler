@@ -6,11 +6,10 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.requiredBody
-import org.springframework.web.server.ResponseStatusException
 
 @Component
 class SkjermingClient(
-    @Value("\${app.skjerming.url}") private val url: String,
+    @Value("\${app.skjerming.url}") private val baseUrl: String,
     @Value("\${app.skjerming.target}") private val target: String,
     private val tokenService: TokenService
 ) {
@@ -18,15 +17,16 @@ class SkjermingClient(
     private val restClient = RestClient.create()
 
     fun erBorgerSkjermet(token: String, fnr: String): Boolean {
+        val url = "$baseUrl/skjermet"
         return tokenService.hentToken(token, target).let { accessToken ->
             restClient
                 .post()
-                .uri("$url/skjermet")
+                .uri(url)
                 .header("Authorization", "Bearer $accessToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .body(SkjermingRequest(fnr))
                 .retrieve()
-                .onStatus({ it == HttpStatus.FORBIDDEN}) { _, _ -> throw ResponseStatusException(HttpStatus.FORBIDDEN) }
+                .onStatus({ it == HttpStatus.FORBIDDEN}) { _, response -> throw IkkeTilgangException(url, "${response.statusCode} - ${response.statusText}") }
                 .requiredBody<Boolean>()
         }
     }

@@ -6,11 +6,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.requiredBody
-import org.springframework.web.server.ResponseStatusException
 
 @Component
 class RepresentasjonClient(
-    @Value("\${app.representasjon.url}") private val url: String,
+    @Value("\${app.representasjon.url}") private val baseUrl: String,
     @Value("\${app.representasjon.target}") private val scope: String,
     private val tokenService: TokenService
 ) {
@@ -18,16 +17,18 @@ class RepresentasjonClient(
 
     fun hentRepresentasjon(token: String, innloggaBorgerFnr: String, kryptertRepresentertFnr: String): RepresentasjonResponse {
         val accessToken = tokenService.hentToken(token, scope)
+        val url = "$baseUrl/representasjon/hasValidRepresentasjonsforhold"
+
         return restClient
             .post()
-            .uri("$url/representasjon/hasValidRepresentasjonsforhold")
+            .uri(url)
             .header("Authorization", "Bearer $accessToken")
             .body(RepresenttasjonRequest(
                 kryptertRepresentertFnr,
                 innloggaBorgerFnr,
                 representasjonstyper))
             .retrieve()
-            .onStatus({ it == HttpStatus.FORBIDDEN}) { _, _ -> throw ResponseStatusException(HttpStatus.FORBIDDEN) }
+            .onStatus({ it == HttpStatus.FORBIDDEN}) { _, response -> throw IkkeTilgangException(url, "${response.statusCode} - ${response.statusText}") }
             .requiredBody<RepresentasjonResponse>()
     }
 }
@@ -51,5 +52,3 @@ private val representasjonstyper = listOf(
     "VERGE_UFORETRYGD_LES",
     "VERGE_UFORETRYGD_SKRIV"
 )
-
-
