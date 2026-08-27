@@ -36,6 +36,8 @@ spec:
         databases:
           - name: ufore-varsler
             envVarPrefix: DB
+            users:
+              - name: ufore-varsler-send-jobb
   replicas:
     min: 2
     max: 4
@@ -66,7 +68,9 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: din-uforetrygd-backend
+        - application: din-uforetrygd-frontend-borger
+          cluster: prod-gcp
+        - application: din-uforetrygd-frontend-veileder
           cluster: prod-gcp
     outbound:
       rules:
