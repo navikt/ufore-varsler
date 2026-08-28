@@ -1,0 +1,16 @@
+apiVersion: kafka.nais.io/v1
+kind: Topic
+metadata:
+  name: varsler
+  namespace: ufore
+  labels:
+    team: ufore
+spec:
+  pool: nav-prod
+  acl:
+    - team: ufore
+      application: ufore-varsler
+      access: read
+    - team: pensjondeployer
+      application: pensjon-pen
+      access: write

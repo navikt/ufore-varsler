@@ -1,39 +1,54 @@
-#apiVersion: nais.io/v1
-#kind: Naisjob
-#metadata:
-#  name: ufore-varsler-paminnelse
-#  namespace: ufore
-#  labels:
-#    team: ufore
-#spec:
-#  image: "{{ image }}"
-#  schedule: "0 6 * * *"
-#  backoffLimit: 2
-#  ttlSecondsAfterFinished: 3600
-#  observability:
-#    logging:
-#      destinations:
-#        - id: elastic
-#        - id: loki
-#  kafka:
-#    pool: nav-prod
-#  gcp:
-#    sqlInstances:
-#      - name: ufore-varsler
-#        databases:
-#          - name: ufore-varsler
-#            envVarPrefix: DB
-#  resources:
-#    limits:
-#      cpu: 500m
-#      memory: 512Mi
-#    requests:
-#      cpu: 100m
-#      memory: 256Mi
-#  env:
-#    - name: SPRING_PROFILES_ACTIVE
-#      value: job,prod
-#    - name: KAFKA_SECURITY_PROTOCOL
-#      value: SSL
-#    - name: LOGGING_CONFIG
-#      value: classpath:logback-json.xml
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  name: ufore-varsler-send-jobb
+  namespace: ufore
+  labels:
+    team: ufore
+spec:
+  image: "{{ image }}"
+  schedule: "*/5 8-16 * * 1-5"
+  timeZone: Europe/Oslo
+  backoffLimit: 0
+  concurrencyPolicy: Forbid
+  ttlSecondsAfterFinished: 60
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+  kafka:
+    pool: nav-prod
+  gcp:
+    permissions:
+      - resource:
+          apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+          kind: Project
+        role: roles/cloudsql.client
+  accessPolicy:
+    outbound:
+      external:
+        - host: ufore-unleash-api.nav.cloud.nais.io
+      rules:
+        - application: prometheus-pushgateway
+          namespace: nais-system
+  envFrom:
+    - secret: ufore-varsler-unleash-api-token
+#      TODO: Finnes riktig secretnavn her. Kommando for å finne riktig hash: nais app env ufore-varsler --environment prod-gcp --output json
+#    - secret: google-sql-ufore-varsler-ufore-varsler-ufore-varsler-s-b6657f5a
+
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: job,prod
+    - name: KAFKA_SECURITY_PROTOCOL
+      value: SSL
+    - name: LOGGING_CONFIG
+      value: classpath:logback-json.xml
+    - name: PUSH_GATEWAY_ADDRESS
+      value: prometheus-pushgateway.nais-system:9091
+    - name: CLOUDSQL_INSTANCE
+#     TODO: Denne må verifiseres. Er europe-north1 riktig?
+      value: ufore-prod-8dcb:europe-north1:ufore-varsler
