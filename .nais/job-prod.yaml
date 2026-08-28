@@ -37,8 +37,7 @@ spec:
           namespace: nais-system
   envFrom:
     - secret: ufore-varsler-unleash-api-token
-#      TODO: Finnes riktig secretnavn her. Kommando for å finne riktig hash: nais app env ufore-varsler --environment prod-gcp --output json
-#    - secret: google-sql-ufore-varsler-ufore-varsler-ufore-varsler-s-b6657f5a
+    - secret: google-sql-ufore-varsler-ufore-varsler-ufore-varsler-s-b6657f5a
 
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -50,5 +49,4 @@ spec:
     - name: PUSH_GATEWAY_ADDRESS
       value: prometheus-pushgateway.nais-system:9091
     - name: CLOUDSQL_INSTANCE
-#     TODO: Denne må verifiseres. Er europe-north1 riktig?
       value: ufore-prod-8dcb:europe-north1:ufore-varsler

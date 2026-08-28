@@ -1,16 +1,15 @@
-#apiVersion: networking.k8s.io/v1
-#kind: NetworkPolicy
-#metadata:
-#  name: ufore-varsler-send-jobb-db
-#  namespace: ufore
-#spec:
-#  egress:
-#    - to:
-#        - ipBlock:
-#            Finn riktig IP med kubectl get sqlinstance ufore-varsler -n ufore -o jsonpath='{.status.firstIpAddress}'
-#            cidr: 34.88.237.158/32
-#  podSelector:
-#    matchLabels:
-#      app: ufore-varsler-send-jobb
-#  policyTypes:
-#    - Egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ufore-varsler-send-jobb-db
+  namespace: ufore
+spec:
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 34.88.140.66/32
+  podSelector:
+    matchLabels:
+      app: ufore-varsler-send-jobb
+  policyTypes:
+    - Egress

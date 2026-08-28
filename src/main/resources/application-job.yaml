@@ -15,7 +15,6 @@ spring:
       password: ${DB_UFORE_VARSLER_SEND_JOBB_PASSWORD}
       data-source-properties:
         socketFactory: com.google.cloud.sql.postgres.SocketFactory
-#        Denne må byttes til prod ved prod. Flytte til nais fil?
         cloudSqlInstance: ${CLOUDSQL_INSTANCE}
 
 app:
