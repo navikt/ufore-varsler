@@ -58,7 +58,7 @@ jobs:
       security-events: write
 
     steps:
-      - uses: nais/login@d6ab5d83f735e9f155eb9d7d29cd20ae46820ea9
+      - uses: nais/login@40b72a35a18ddf2ad74b632461139ab838cc2a2f
         with:
           team: ufore
 
