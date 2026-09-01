@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 
 @Service
@@ -69,7 +68,8 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun antallBestiltIDag(): Int {
-        val startPåDagen = ZonedDateTime.now(ZoneId.of("Europe/Oslo")).toLocalDate().atStartOfDay(ZoneId.of("Europe/Oslo"))
+        val norskTidssone = ZoneId.of("Europe/Oslo")
+        val startPåDagen = OffsetDateTime.now(norskTidssone).toLocalDate().atStartOfDay(norskTidssone).toOffsetDateTime()
         val startPåNesteDag = startPåDagen.plusDays(1)
 
         return jdbcTemplate.queryForObject(
