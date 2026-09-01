@@ -39,7 +39,7 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.google.cloud.sql:postgres-socket-factory:1.29.0")
+	runtimeOnly("com.google.cloud.sql:postgres-socket-factory:1.30.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
