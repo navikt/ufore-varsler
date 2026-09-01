@@ -10,8 +10,7 @@ import no.nav.ufore.varsler.opprettVarsel.Varsel
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import no.nav.ufore.varsler.opprettVarsel.VarselType
 import tools.jackson.databind.ObjectMapper
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,7 +29,7 @@ class MinSideVarselStatusConsumerTest {
         mottakerFnr = "1234",
         status = Status.OPPRETTET,
         type = VarselType.UNGE_MED_UFORE,
-        opprettet = LocalDateTime.now(),
+        opprettet = OffsetDateTime.now(),
         bestilt = null,
         sendt = null,
         åpnet = null,
@@ -44,7 +43,7 @@ class MinSideVarselStatusConsumerTest {
         varselId = UUID.randomUUID().toString(),
         namespace = "ufore",
         appnavn = "ufore-varsler-send-jobb",
-        tidspunkt = ZonedDateTime.now(),
+        tidspunkt = OffsetDateTime.now(),
     )
 
     @Test

@@ -10,7 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 // https://navikt.github.io/tms-dokumentasjon/varsler/produsere/#overvaking-av-varsler
@@ -71,7 +71,7 @@ data class MinSideVarselHendelse(
     val varselId: String, // Min side operer med både UUID og ULID
     val namespace: String,
     val appnavn: String,
-    val tidspunkt: ZonedDateTime,
+    val tidspunkt: OffsetDateTime,
     val feilmelding: String? = null,
 )
 
