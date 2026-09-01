@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.dao.DataIntegrityViolationException
+import java.time.ZonedDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -90,7 +91,7 @@ class VarselRepositoryTest {
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
         val sendtVarsel = repository.lagre(fnr = "123459156", type = VarselType.UNGE_MED_UFORE)
 
-        repository.oppdaterSendt(sendtVarsel.varselId)
+        repository.oppdaterSendt(sendtVarsel.varselId, ZonedDateTime.now())
 
 		val opprettet = repository.hentOpprettet(10)
 
@@ -155,7 +156,7 @@ class VarselRepositoryTest {
 		val repository = VarselRepository(jdbcTemplate)
 
 		val varsel = repository.lagre(fnr = "12345678910", type = VarselType.UNGE_MED_UFORE)
-		repository.oppdaterSendt(varsel.varselId)
+		repository.oppdaterSendt(varsel.varselId, ZonedDateTime.now())
 
 		val oppdatert = assertNotNull(repository.hent(varsel.varselId))
 		assertEquals(Status.SENDT, oppdatert.status)

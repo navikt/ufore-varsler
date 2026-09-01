@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.*
 
 @Service
@@ -87,10 +88,10 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun oppdaterSendt(varselId: UUID) {
+    fun oppdaterSendt(varselId: UUID, tidspunkt: ZonedDateTime) {
         jdbcTemplate.update(
             "update varsel set status = ?, sendt = ? where varsel_id = ?",
-            Status.SENDT.name, LocalDateTime.now(), varselId
+            Status.SENDT.name, tidspunkt.toLocalDateTime(), varselId
         )
     }
     fun oppdaterFeilet(varselId: UUID) {

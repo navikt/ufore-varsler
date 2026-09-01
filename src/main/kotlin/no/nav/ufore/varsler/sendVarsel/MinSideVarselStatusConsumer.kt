@@ -3,7 +3,6 @@ package no.nav.ufore.varsler.sendVarsel
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.tms.varsel.action.Varseltype
-import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -45,7 +44,7 @@ class MinSideVarselStatusConsumer(
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
-            varselRepository.oppdaterSendt(varselId)
+            varselRepository.oppdaterSendt(varselId, minSideHendelse.tidspunkt)
             meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").increment()
         }
 

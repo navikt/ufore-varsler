@@ -9,7 +9,6 @@ import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.Varsel
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import no.nav.ufore.varsler.opprettVarsel.VarselType
-import org.junit.jupiter.api.assertThrows
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -55,7 +54,7 @@ class MinSideVarselStatusConsumerTest {
         val melding = ObjectMapper().writeValueAsString(hendelse)
         consumer.consume(melding)
 
-        verify(exactly = 1) { varselRepository.oppdaterSendt(any()) }
+        verify(exactly = 1) { varselRepository.oppdaterSendt(any(), any()) }
     }
 
     @Test
@@ -65,7 +64,7 @@ class MinSideVarselStatusConsumerTest {
 
         consumer.consume(melding)
 
-        verify(exactly = 0) { varselRepository.oppdaterSendt(any()) }
+        verify(exactly = 0) { varselRepository.oppdaterSendt(any(), any()) }
         verify(exactly = 0) { varselRepository.hent(any()) }
     }
 
@@ -76,7 +75,7 @@ class MinSideVarselStatusConsumerTest {
         val melding = ObjectMapper().writeValueAsString(hendelse)
         consumer.consume(melding)
 
-        verify(exactly = 1) { varselRepository.oppdaterSendt(any()) }
+        verify(exactly = 1) { varselRepository.oppdaterSendt(any(), any()) }
         assertEquals(1.0, meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").count())
     }
 
