@@ -3,7 +3,8 @@ package no.nav.ufore.varsler.opprettVarsel
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import java.sql.ResultSet
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -16,7 +17,7 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
 			status = Status.OPPRETTET,
 			type = type,
 			varselId = UUID.randomUUID(),
-			opprettet = LocalDateTime.now(),
+			opprettet = OffsetDateTime.now(),
             bestilt = null,
             sendt = null,
 			åpnet = null,
@@ -67,30 +68,36 @@ class VarselRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun antallBestiltIDag(): Int {
+        val norskTidssone = ZoneId.of("Europe/Oslo")
+        val startPåDagen = OffsetDateTime.now(norskTidssone).toLocalDate().atStartOfDay(norskTidssone).toOffsetDateTime()
+        val startPåNesteDag = startPåDagen.plusDays(1)
+
         return jdbcTemplate.queryForObject(
-            "select count(*) from varsel where CAST(bestilt AS DATE) = CURRENT_DATE",
+            "select count(*) from varsel where bestilt >= ? and bestilt < ?",
             { rs, _ -> rs.getInt(1) },
+            startPåDagen,
+            startPåNesteDag,
         )
     }
 
     fun oppdaterBestilt(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set status = ?, bestilt = ? where varsel_id = ?",
-			Status.BESTILT.name, LocalDateTime.now(), varselId
+            Status.BESTILT.name, OffsetDateTime.now(), varselId
         )
     }
 
     fun oppdaterÅpnet(varselId: UUID) {
         jdbcTemplate.update(
             "update varsel set er_aapnet = true, aapnet = ? where varsel_id = ?",
-            LocalDateTime.now(), varselId
+            OffsetDateTime.now(), varselId
         )
     }
 
-    fun oppdaterSendt(varselId: UUID) {
+    fun oppdaterSendt(varselId: UUID, tidspunkt: OffsetDateTime) {
         jdbcTemplate.update(
             "update varsel set status = ?, sendt = ? where varsel_id = ?",
-            Status.SENDT.name, LocalDateTime.now(), varselId
+            Status.SENDT.name, tidspunkt, varselId
         )
     }
     fun oppdaterFeilet(varselId: UUID) {
@@ -108,10 +115,10 @@ data class Varsel(
     val status: Status,
     val type: VarselType,
     val varselId: UUID,
-    val opprettet: LocalDateTime,
-    val bestilt: LocalDateTime?,
-    val sendt: LocalDateTime?,
-    val åpnet: LocalDateTime?,
+    val opprettet: OffsetDateTime,
+    val bestilt: OffsetDateTime?,
+    val sendt: OffsetDateTime?,
+    val åpnet: OffsetDateTime?,
     val erÅpnet: Boolean,
 ) {
     companion object {
@@ -121,10 +128,10 @@ data class Varsel(
             status = Status.valueOf(rs.getString("status")),
             type = VarselType.valueOf(rs.getString("type")),
 			varselId = rs.getObject("varsel_id", UUID::class.java),
-            opprettet = rs.getObject("opprettet", LocalDateTime::class.java),
-            bestilt = rs.getObject("bestilt", LocalDateTime::class.java),
-            sendt = rs.getObject("sendt", LocalDateTime::class.java),
-            åpnet = rs.getObject("aapnet", LocalDateTime::class.java),
+            opprettet = rs.getObject("opprettet", OffsetDateTime::class.java),
+            bestilt = rs.getObject("bestilt", OffsetDateTime::class.java),
+            sendt = rs.getObject("sendt", OffsetDateTime::class.java),
+            åpnet = rs.getObject("aapnet", OffsetDateTime::class.java),
             erÅpnet = rs.getBoolean("er_aapnet")
         )
     }

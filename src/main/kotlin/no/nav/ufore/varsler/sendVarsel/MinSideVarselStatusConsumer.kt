@@ -3,7 +3,6 @@ package no.nav.ufore.varsler.sendVarsel
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.tms.varsel.action.Varseltype
-import no.nav.ufore.varsler.opprettVarsel.Status
 import no.nav.ufore.varsler.opprettVarsel.VarselRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -11,7 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 // https://navikt.github.io/tms-dokumentasjon/varsler/produsere/#overvaking-av-varsler
@@ -45,7 +44,7 @@ class MinSideVarselStatusConsumer(
         }
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
-            varselRepository.oppdaterSendt(varselId)
+            varselRepository.oppdaterSendt(varselId, minSideHendelse.tidspunkt)
             meterRegistry.counter("ufore_varsler_status_total", "status", "sendt").increment()
         }
 
@@ -72,7 +71,7 @@ data class MinSideVarselHendelse(
     val varselId: String, // Min side operer med både UUID og ULID
     val namespace: String,
     val appnavn: String,
-    val tidspunkt: ZonedDateTime,
+    val tidspunkt: OffsetDateTime,
     val feilmelding: String? = null,
 )
 
