@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/varsler")
 class VarselStatusController(
     private val varselStatusService: VarselStatusService,
+    private val tokenService: TokenService,
     private val meterRegistry: MeterRegistry,
 ) {
 
@@ -24,7 +25,7 @@ class VarselStatusController(
         val token = authHeader?.removePrefix("Bearer ") ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         val harMottattVarsel = varselStatusService.hentStatus(token, requestBody?.fnr, kryptertRepresentertFnr)
-        meterRegistry.counter("ufore_varsler_status_returnert_total", "har_mottatt_varsel", harMottattVarsel.toString()).increment()
+        registrerMetrikk(token, harMottattVarsel)
         return ResponseEntity.ok(VarselStatusResponse(harMottattVarsel))
     }
 
@@ -37,6 +38,11 @@ class VarselStatusController(
     @ExceptionHandler(ManglendeFnrException::class)
     fun handle(): ResponseEntity<String> {
         return ResponseEntity.badRequest().body("Fnr mangler")
+    }
+
+    private fun registrerMetrikk(token: String, harMottattVarsel: Boolean) {
+        val brukerType = tokenService.hentBrukertype(token)
+        meterRegistry.counter("ufore_varsler_status_returnert_total", "har_mottatt_varsel", harMottattVarsel.toString(), "brukertype", brukerType.name).increment()
     }
 
 }
