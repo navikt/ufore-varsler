@@ -32,9 +32,6 @@ spec:
     outbound:
       external:
         - host: ufore-unleash-api.nav.cloud.nais.io
-      rules:
-        - application: prometheus-pushgateway
-          namespace: nais-system
   envFrom:
     - secret: ufore-varsler-unleash-api-token
     - secret: google-sql-ufore-varsler-ufore-varsler-ufore-varsler-s-b6657f5a
@@ -46,7 +43,5 @@ spec:
       value: SSL
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name: PUSH_GATEWAY_ADDRESS
-      value: prometheus-pushgateway.nais-system:9091
     - name: CLOUDSQL_INSTANCE
       value: ufore-prod-8dcb:europe-north1:ufore-varsler
