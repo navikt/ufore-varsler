@@ -35,7 +35,6 @@ dependencies {
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 	implementation("io.micrometer:micrometer-registry-prometheus")
-	implementation("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
