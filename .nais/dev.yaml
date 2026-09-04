@@ -38,6 +38,15 @@ spec:
             envVarPrefix: DB
             users:
               - name: ufore-varsler-send-jobb
+        flags:
+          - name: "cloudsql.enable_pgaudit"
+            value: "on"
+          - name: "pgaudit.log"
+            value: "write,ddl,role"
+          - name: "pgaudit.log_parameter"
+            value: "on"
+          - name: "pgaudit.log_relation"
+            value: "on"
   replicas:
     min: 1
     max: 1
