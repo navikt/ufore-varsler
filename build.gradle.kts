@@ -8,8 +8,7 @@ plugins {
 group = "no.nav.ufore"
 version = "0.0.1-SNAPSHOT"
 
-ext["tomcat.version"] = "11.0.22"
-ext["postgresql.version"] = "42.7.11"
+ext["tomcat.version"] = "11.0.25"
 
 java {
 	toolchain {
@@ -23,6 +22,10 @@ repositories {
 }
 
 dependencies {
+	constraints {
+		implementation("at.yawk.lz4:lz4-java:1.11.2")
+	}
+
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
