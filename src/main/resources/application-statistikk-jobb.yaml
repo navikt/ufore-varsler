@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: ufore-varsler-statistikk
+  datasource:
+    hikari:
+      jdbc-url: jdbc:postgresql://${DB_UFORE_VARSLER_SEND_JOBB_HOST}:${DB_UFORE_VARSLER_SEND_JOBB_PORT}/${DB_UFORE_VARSLER_SEND_JOBB_DATABASE}
+      username: ${DB_UFORE_VARSLER_SEND_JOBB_USERNAME}
+      password: ${DB_UFORE_VARSLER_SEND_JOBB_PASSWORD}
+      data-source-properties:
+        socketFactory: com.google.cloud.sql.postgres.SocketFactory
+        cloudSqlInstance: ${CLOUDSQL_INSTANCE}
+
+app:
+  statistikk:
+    bigquery:
+      dataset: ${GCP_TEAM_PROJECT_ID}.ufore_varsler_statistikk

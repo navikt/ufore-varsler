@@ -38,6 +38,7 @@ spec:
             envVarPrefix: DB
             users:
               - name: ufore-varsler-send-jobb
+              - name: ufore-varsler-statistikk-jobb
         flags:
           - name: "cloudsql.enable_pgaudit"
             value: "on"
