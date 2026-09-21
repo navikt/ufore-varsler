@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
 	constraints {
-		implementation("at.yawk.lz4:lz4-java:1.11.2")
+		implementation("at.yawk.lz4:lz4-java:1.11.3")
 	}
 
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
