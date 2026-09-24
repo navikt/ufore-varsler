@@ -29,19 +29,14 @@ class MinSideVarselStatusConsumer(
 	)
 	fun consume(@Payload message: String) {
 		val minSideHendelse = objectMapper.readValue(message, MinSideVarselHendelse::class.java)
-        logger.info("Mottok varselhendelse fra Min side: varselId: ${minSideHendelse.varselId}, status: ${minSideHendelse.status}, eventName: ${minSideHendelse.eventName} appnavn: ${minSideHendelse.appnavn}")
 
         val varselId =
             runCatching { UUID.fromString(minSideHendelse.varselId) }
                 .getOrElse {
-                    logger.info("Ugyldig UUID i varselId, melding tilhører ikke vår app, fortsetter")
                     return
                 }
-        val varsel = varselRepository.hent(varselId)
-        if (varsel == null) {
-            logger.info("Varsel med varselId $varselId ikke funnet i databasen, fortsetter")
-            return
-        }
+
+        varselRepository.hent(varselId) ?: return
 
         if (minSideHendelse.status == MinSideEksternStatus.sendt) {
             varselRepository.oppdaterSendt(varselId, minSideHendelse.tidspunkt)
