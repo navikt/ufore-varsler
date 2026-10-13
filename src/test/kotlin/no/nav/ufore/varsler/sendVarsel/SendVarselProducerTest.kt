@@ -17,7 +17,7 @@ class SendVarselProducerTest {
         cluster = "local",
         namespace = "local",
         appnavn = "ufore-varsler",
-        dineMuligheterUrl = "https://uforetrygd-selvbetjening-frontend-borger.intern.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter",
+        dineMuligheterUrl = "https://uforetrygd-selvbetjening-frontend-borger.ansatt.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter",
     )
 
     @Test

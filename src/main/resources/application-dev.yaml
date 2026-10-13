@@ -1,5 +1,5 @@
 app:
-  dine-muligheter-url: https://uforetrygd-selvbetjening-frontend-borger.intern.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter
+  dine-muligheter-url: https://uforetrygd-selvbetjening-frontend-borger.ansatt.dev.nav.no/uforetrygd/selvbetjening/dine-muligheter
   pid-encryption:
     url: http://pensjon-pid-encryption.pensjon-person
     target: dev-gcp:pensjon-person:pensjon-pid-encryption
