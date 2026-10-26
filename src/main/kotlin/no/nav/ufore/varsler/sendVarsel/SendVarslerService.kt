@@ -13,7 +13,7 @@ class SendVarslerService(
 ) {
 
     companion object {
-        val maksAntallPerDag = 300
+        val maksAntallPerDag = 600
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
