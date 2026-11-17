@@ -14,7 +14,7 @@ app:
     target: dev-fss:pensjon-person:pensjon-representasjon-q2
 
 ad-grupper:
-  skjermet: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
+  skjermet: 8df187e3-f6ab-4a5d-8830-61bf148e59fe
   brukerhjelpa: 9e122ddd-e542-4cc1-a7eb-92c99140fe0e
   okonomi: 05ae245b-7b47-428a-9074-4ff6b59eddbc
   saksbehandler: 8bb9b8d1-f46a-4ade-8ee8-5895eccdf8cf

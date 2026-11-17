@@ -62,7 +62,7 @@ app:
     target: prod-fss:pensjon-person:pensjon-representasjon
 
 ad-grupper:
-  skjermet: e750ceb5-b70b-4d94-b4fa-9d22467b786b
+  skjermet: 3121171d-bced-4967-b993-caaf57f02b73
   brukerhjelpa: 7845a796-1516-4d14-b500-fd65c001f35c
   okonomi: 70ef8e7f-7456-4298-95e0-b13c0ef2422b
   saksbehandler: 0af3955f-df85-4eb0-b5b2-45bf2c8aeb9e
